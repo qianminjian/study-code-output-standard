@@ -11,25 +11,41 @@ permissions:
 
 jobs:
   test:
-    name: tests/run-all.sh
+    name: tests
+    uses: ./.github/workflows/_test.yml
+    with:
+      working-directory: '.'
+      test-command: 'bash tests/run-all.sh'
+
+  lint:
+    name: lint
+    uses: ./.github/workflows/_lint.yml
+    with:
+      shell-paths: 'skill scripts docs scripts tests'
+      markdown-paths: 'docs skill README.md'
+
+  secret-scan:
+    name: secret-scan
+    uses: ./.github/workflows/_secret-scan.yml
+    with:
+      scan-paths: '.'
+      exclude-paths: 'REVIEW.md 输出代码资产的提示词.md .serena'
+
+  ci-status:
+    name: ci-status
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-
+    needs: [test, lint, secret-scan]
+    if: always()
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set UTF-8 locale
+      - name: Report status
         run: |
-          sudo locale-gen en_US.UTF-8 >/dev/null 2>&1 || true
-          echo "LANG=en_US.UTF-8" >> "$GITHUB_ENV"
-          echo "LC_ALL=en_US.UTF-8" >> "$GITHUB_ENV"
-
-      - name: Run test suite
-        run: bash tests/run-all.sh
-
-      - name: Show shell info (debug)
-        if: failure()
-        run: |
-          echo "bash: $BASH_VERSION"
-          echo "locale: $(locale)"
+          echo "test:        ${{ needs.test.result }}"
+          echo "lint:        ${{ needs.lint.result }}"
+          echo "secret-scan: ${{ needs.secret-scan.result }}"
+          if [ "${{ needs.test.result }}" != "success" ] \
+            || [ "${{ needs.lint.result }}" != "success" ] \
+            || [ "${{ needs.secret-scan.result }}" != "success" ]; then
+            echo "::error::CI failed (see above)"
+            exit 1
+          fi
+          echo "==> CI 全过"
