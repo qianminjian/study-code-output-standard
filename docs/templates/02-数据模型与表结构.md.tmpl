@@ -1,0 +1,88 @@
+<!--
+@meta {
+  "id": "02-数据模型与表结构",
+  "version": "0.1.0",
+  "last_updated": "<YYYY-MM-DD>",
+  "data_source": "<来源>",
+  "code_version": "git:<hash>",
+  "owner": "<团队>",
+  "ai_consumable": true,
+  "severity_taxonomy": "P0|P1|P2|P3"
+}
+-->
+
+# 02 · 数据模型与表结构
+
+> 共 N 个 Model + M 个 Mapper + K 个 XML + J 张表
+
+## 1. 实体类与表对应关系
+
+| Model | 对应表 | 继承 | 关键字段 | 备注 |
+|---|---|---|---|---|
+| **<BaseModel>** | — | — | <字段> | 父类 |
+| **<Entity1>** | `<table>` | BaseModel | <字段> | <备注> |
+| **<Entity2>** | `<table>` | BaseModel | <字段> | <备注> |
+
+> 注意点：
+> - <命名不一致>
+> - <id 类型不一致>
+> - <其它>
+
+## 2. 数据库表清单
+
+| 表名 | 中文 | 主要字段 | 索引/约束 |
+|---|---|---|---|
+| `<table1>` | <中文> | <字段> | <索引> |
+| `<table2>` | <中文> | <字段> | <索引> |
+
+## 3. 关键关联关系
+
+### 3.1 权限模型
+```
+<ER 关系图>
+```
+
+### 3.2 业务模型
+```
+<ER 关系图>
+```
+
+### 3.3 字段命名约定
+- 表字段：小写 + 下划线
+- Java Model：小驼峰
+- MyBatis：自动转换
+- <其它约定>
+
+## 4. MyBatis XML 命名空间
+
+| XML 文件 | namespace | 主要操作 |
+|---|---|---|
+| `<XxxMapper.xml>` | `<namespace>` | <操作列表> |
+
+## 5. 关键 SQL 模式
+
+### 5.1 分页
+- **Mapper 接口**：约定方法名 `findPage`
+- **Service 实现**：反射执行
+- **XML**：`<where>` + `<if>` 拼接
+
+### 5.2 多表 Join
+```xml
+<示例 SQL>
+```
+
+### 5.3 ⚠️ SQL 注入风险
+- <位置>: 使用 `${}` 字符串拼接
+
+### 5.4 子查询 / N+1
+- <位置>: N+1 风险
+
+### 5.5 resultMap
+- <位置>: 自定义 resultMap
+
+## 元信息
+
+| 字段 | 值 |
+|---|---|
+| 验证命令 | `find <model-dir> -name "*.java" \| wc -l` |
+| SQL 注入扫描 | `grep -rE "\\$\\{[^}]+\\}" <xml-dir>` |
