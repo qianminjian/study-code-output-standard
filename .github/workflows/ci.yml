@@ -28,8 +28,7 @@ jobs:
     name: secret-scan
     uses: ./.github/workflows/_secret-scan.yml
     with:
-      scan-paths: '.'
-      exclude-paths: 'REVIEW.md 输出代码资产的提示词.md .serena'
+      exclude-paths: 'REVIEW.md,输出代码资产的提示词.md,.serena'
 
   ci-status:
     name: ci-status
