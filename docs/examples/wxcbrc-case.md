@@ -1,8 +1,8 @@
 # 案例 · wxcbrc 项目（来源参考）
 
-> 抽象自 `/Users/minjianq/Documents/66-Project/ClaudeCode/wxcbrc/docs/` 12 篇资产。
+> 抽象自 `~/<保密路径>/wxcbrc/docs/` 12 篇资产。
 > 用于**横向对照本方法论产出物**。
-> 真实项目位置：`/Users/minjianq/Documents/66-Project/ClaudeCode/wxcbrc/wxcbrc_mgmt/`
+> 真实项目位置：`~/<保密路径>/wxcbrc_mgmt/`
 
 ---
 
@@ -112,7 +112,7 @@
 **关键发现**：
 
 - Spring Security + 自写 JWT
-- JWT 密钥硬编码 `"huawei"`（P0）
+- JWT 密钥硬编码 `"hardcoded-default-secret"`（P0）
 - CORS `allowedOrigins("*")` + `allowCredentials(true)`（P0）
 - `/actuator/**` 全部暴露（P0）
 - `SysLogAspect` Pointcut 写错包名 → 永远不触发（半成品）
@@ -271,7 +271,7 @@
 
 ### 经验 6：硬编码必扫
 
-- 密钥 `"huawei"`
+- 密钥 `"hardcoded-default-secret"`
 - 端口 `9090` vs `9091`
 - 内网 IP `10.52.9.110`
 - DB 密码 `root/root`

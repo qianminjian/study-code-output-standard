@@ -55,7 +55,7 @@
 
 **症状**：
 ```java
-String secret = "huawei";  // @secret-leak
+String secret = "hardcoded-default-secret";  // @secret-leak
 ```
 
 **修复**：
@@ -168,4 +168,4 @@ const baseUrl = process.env.VUE_APP_API_BASE || `${location.origin}/api`
 |---|---|
 | 配套 | references/methodology.md / asset-types.md |
 | 适用 | Step 5 标注时 |
-| 标签数 | 25（24 反模式 + 1 占位） |
+| 标签数 | 25（标签全集表，详见 docs/07-典型案例与反模式.md §4） |

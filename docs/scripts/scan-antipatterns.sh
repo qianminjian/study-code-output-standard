@@ -15,9 +15,15 @@ fi
 
 echo ""
 echo "=== @secret-leak  密钥/密码明文 ==="
-grep -rnE "(secret|password|token)\\s*=\\s*[\"'][^\"']{8,}[\"']" \
+# 修复 P2-04：覆盖 3 种常见格式
+#   1) 字符串赋值（带/不带引号）：secret = "xxx" / secret='xxx' / secret=xxx
+#   2) YAML 冒号格式：        secret: xxx
+#   3) 中间空格：             password = 'foo'
+# 字符阈值 6+（避免 false positive，如 password=123）
+# 排除 test/sample/mock/example
+grep -rnE "(secret|password|passwd|token|apikey|api_key|access_key|private_key|jwt[._-]?secret)\\s*[:=]\\s*[\"']?[A-Za-z0-9_./+=-]{6,}[\"']?" \
   "$SRC_DIR" 2>/dev/null \
-  | grep -v "test" \
+  | grep -viE "test|sample|mock|example|<.*>|\$\{|placeholder" \
   | head -5 || echo "  (clean)"
 
 echo ""
@@ -31,7 +37,15 @@ grep -rnE "(127\\.0\\.0\\.1|10\\.[0-9]+\\.[0-9]+\\.[0-9]+|192\\.168\\.[0-9]+\\.[
 
 echo ""
 echo "=== @actuator-exposure  actuator 暴露 ==="
-grep -rn "actuator" "$SRC_DIR" 2>/dev/null | head -5 || echo "  (no actuator)"
+# 修复 P2-02：只匹配"真正暴露"配置（exposure.include=* 或 @RestControllerEndpoint）
+# 避免任何 "actuator" 字符串引用都误报
+grep -rnE "exposure\\.include\\s*[:=]\\s*[\"']?\\*" \
+  "$SRC_DIR" 2>/dev/null | head -5 || echo "  (clean)"
+grep -rn "@RestControllerEndpoint\\|@Endpoint.*(read|write)\\s*=" \
+  "$SRC_DIR" 2>/dev/null | head -5 || true
+if ! grep -rqE "exposure\\.include\\s*[:=]\\s*[\"']?\\*|@RestControllerEndpoint" "$SRC_DIR" 2>/dev/null; then
+  echo "  (no full actuator exposure)"
+fi
 
 echo ""
 echo "=== @todo-stub  TODO 占位 ==="

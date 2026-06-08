@@ -4,12 +4,16 @@
 #   powershell -ExecutionPolicy Bypass -File install.ps1 -Project
 #   powershell -ExecutionPolicy Bypass -File install.ps1 -Path <dir>
 #   powershell -ExecutionPolicy Bypass -File install.ps1 -Uninstall
+#
+# 选项：
+#   -Force    覆盖已存在的安装（非交互）
 
 param(
     [switch]$Personal,
     [switch]$Project,
     [string]$Path,
     [switch]$Uninstall,
+    [switch]$Force,
     [switch]$Help
 )
 
@@ -74,12 +78,22 @@ if ($Personal) {
 
 # 检查
 if (Test-Path $TargetDir) {
-    $yn = Read-Host "  $TargetDir 已存在，覆盖？[y/N]"
-    if ($yn -notin @("y", "Y")) {
-        Write-Host "已取消"
-        exit 1
+    # 修复 P1-09：非交互模式非 -Force 时显式报错
+    if ($Force) {
+        Write-Host "  -Force 模式：覆盖 $TargetDir"
+        Remove-Item -Recurse -Force $TargetDir
+    } elseif ([Environment]::UserInteractive) {
+        $yn = Read-Host "  $TargetDir 已存在，覆盖？[y/N]"
+        if ($yn -notin @("y", "Y")) {
+            Write-Host "已取消"
+            exit 1
+        }
+        Remove-Item -Recurse -Force $TargetDir
+    } else {
+        Write-Host "ERROR: 非交互模式且未指定 -Force，拒绝覆盖" -ForegroundColor Red
+        Write-Host "  解决: install.ps1 ... -Force" -ForegroundColor Red
+        exit 2
     }
-    Remove-Item -Recurse -Force $TargetDir
 }
 
 # 创建父目录

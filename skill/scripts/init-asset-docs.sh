@@ -69,17 +69,17 @@ fi
 mkdir -p "$OUTPUT_DIR"/{templates,ai-prompts,references,scripts}
 
 # 5. 复制 12 份资产占位（带 frontmatter）
+# 修复 P2-01：白名单方式（仅复制 00-12 编号资产，跳过其它）
 echo "==> 复制 12 份资产占位"
-for tmpl in "$METHODOLOGY_DIR/docs/templates/"*.md.tmpl; do
-  if [ -f "$tmpl" ]; then
-    name="$(basename "$tmpl" .md.tmpl)"
-    # 跳过非资产模板（CLAUDE.md、CHANGELOG.md）
-    case "$name" in
-      CLAUDE*|CHANGELOG*) continue ;;
-    esac
-    cp "$tmpl" "$OUTPUT_DIR/$name.md"
-    echo "  + $name.md"
-  fi
+for n in 00 01 02 03 04 05 06 07 08 09 10 11 12; do
+  # 用通配符找 0N-*.md.tmpl
+  for tmpl in "$METHODOLOGY_DIR/docs/templates/${n}-"*.md.tmpl; do
+    if [ -f "$tmpl" ]; then
+      name="$(basename "$tmpl" .md.tmpl)"
+      cp "$tmpl" "$OUTPUT_DIR/$name.md"
+      echo "  + $name.md"
+    fi
+  done
 done
 
 # 6. 复制 templates/ 副本
@@ -97,7 +97,8 @@ for s in check-meta.sh check-severity.sh check-consistency.sh scan-antipatterns.
     cp "$METHODOLOGY_DIR/docs/scripts/$s" "$OUTPUT_DIR/scripts/$s"
   fi
 done
-chmod +x "$OUTPUT_DIR/scripts/"*.sh 2>/dev/null || true
+# 修复 P3-01：chmod 失败不吞错（set -e 已开启，失败会退出）
+chmod +x "$OUTPUT_DIR/scripts/"*.sh
 
 # 9. 复制 references/（方法论摘要）
 echo "==> 复制 references/"

@@ -50,11 +50,13 @@ study-code-output-standard/
 │   │   ├── methodology.md
 │   │   ├── asset-types.md
 │   │   └── anti-patterns.md
-│   └── scripts/                       ← 4 个核心脚本
+│   └── scripts/                       ← 4 个核心脚本（+ 3 个 PowerShell 等价）
 │       ├── init-asset-docs.sh         ← 创建 asset-docs/ 骨架
 │       ├── write-claude-index.sh      ← 生成 CLAUDE.md 轻量索引
 │       ├── write-claude-asset.sh      ← 生成 CLAUDE-ASSET.md 详情
-│       └── ...（其他）
+│       ├── init-asset-docs.ps1        ← Windows PowerShell 等价
+│       ├── write-claude-index.ps1
+│       └── write-claude-asset.ps1
 └── README.md
 ```
 
@@ -176,6 +178,23 @@ L5 诊断层    11-技术债 / 12-修复
 | Linux | `bash skill/install.sh --personal` |
 | Windows Git Bash | `bash skill/install.sh --personal` |
 | Windows PowerShell | `powershell -ExecutionPolicy Bypass -File skill/install.ps1 -Personal` |
+
+> **Windows 完整流程**：
+> ```powershell
+> # 安装
+> powershell -ExecutionPolicy Bypass -File skill/install.ps1 -Personal
+>
+> # 创建资产骨架
+> cd <目标项目>
+> powershell -ExecutionPolicy Bypass -File <skill>/scripts/init-asset-docs.ps1 -TargetDir .
+>
+> # 生成 CLAUDE.md（Windows 用户需先安装 Git Bash）
+> powershell -ExecutionPolicy Bypass -File <skill>/scripts/write-claude-index.ps1 -TargetDir .
+> powershell -ExecutionPolicy Bypass -File <skill>/scripts/write-claude-asset.ps1 -TargetDir .
+>
+> # 校验（依赖 Git Bash）
+> bash asset-docs/scripts/validate-all.sh
+> ```
 
 ---
 

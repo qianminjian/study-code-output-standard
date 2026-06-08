@@ -79,7 +79,7 @@
 - 数字一览必须可验证
 ```
 
-### Prompt for 02-数据模型
+### Prompt for 02-数据模型与表结构
 
 ```
 【任务】
@@ -371,7 +371,7 @@
 生成后请：
 1. 用 `grep -c "@\(Get\|Post\|Put\|Delete\)Mapping" <path>` 验证端点数
 2. 用 `find <path> -name "*.java" | wc -l` 验证文件数
-3. 检查元信息头 5 字段齐全
+3. 检查元信息头 7 必填字段齐全（+ 1 可选 `severity_taxonomy`）
 4. 检查严重度字段值在 P0-P3 范围
 ```
 
@@ -415,11 +415,11 @@
 
 ```
 【背景】
-项目 <name>，技术栈 <list>。docs/12-修复建议.md 已就绪。
+项目 <name>，技术栈 <list>。docs/12-修复建议与优先级.md 已就绪。
 
 【任务】
 执行 P0 #1：JWT 密钥硬编码。
-【输入】docs/12-修复建议.md §P0
+【输入】docs/12-修复建议与优先级.md §P0
 【输出】一个 PR，含：
 1. JwtTokenUtils 改为读 application.properties
 2. application.properties 新增 jwt.secret

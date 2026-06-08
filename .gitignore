@@ -1,0 +1,10 @@
+.DS_Store
+# IDE / 工具本地缓存
+.serena/
+.vscode/
+.idea/
+# 临时文件
+*.tmp
+*.swp
+*~
+
