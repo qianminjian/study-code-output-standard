@@ -1,5 +1,7 @@
 # 标准代码资产方法论（study-code-output-standard）
 
+[![CI](https://github.com/qianminjian/study-code-output-standard/actions/workflows/ci.yml/badge.svg)](https://github.com/qianminjian/study-code-output-standard/actions/workflows/ci.yml)
+
 > 抽象自 wxcbrc 项目的 12 篇资产，**通用化**为一套"代码反向阅读 → 标准资产"的工程方法论。
 > **v2**：已封装为 Claude Code Skill，在任意项目调用即用。
 
