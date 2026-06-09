@@ -43,8 +43,22 @@ P0=$(grep -rhE --exclude-dir=templates --exclude-dir=ai-prompts \
 case "$P0" in
   ''|*[!0-9]*) P0=0 ;;
 esac
+# v2.4 本轮 #9：统计总问题数 + P0 占比告警
+TOTAL=$(grep -rhE --exclude-dir=templates --exclude-dir=ai-prompts \
+  "[🔴🟡🟢⚪] P[0-3]|\\| P[0-3] \\|" "$DOCS_DIR" 2>/dev/null | wc -l | tr -d ' ' | head -1)
+case "$TOTAL" in
+  ''|*[!0-9]*) TOTAL=0 ;;
+esac
 if [ "${P0}" -gt 10 ]; then
   printf 'WARNING: P0 数量为 %s, 超过 10 = 可能没分级\n' "${P0}"
+  if [ "${TOTAL}" -gt 0 ]; then
+    P0_PCT=$((P0 * 100 / TOTAL))
+    if [ "${P0_PCT}" -gt 10 ]; then
+      printf '⚠️ 暂停建议：P0 占总问题 %d%% (P0=%d / TOTAL=%d)，远超 10%% 阈值\n' "${P0_PCT}" "${P0}" "${TOTAL}"
+      printf '   建议：每 sprint 修 2-3 个 P0，避免一次塞大量 P0 进 sprint（质量保证原则）\n'
+      printf '   优先修：secret-leak / sqlinjection / actuator-exposure（高 ROI）\n'
+    fi
+  fi
 fi
 
 echo "==> OK"

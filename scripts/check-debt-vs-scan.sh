@@ -33,6 +33,15 @@ grep -cE '（推断）|（需 Read 全文）' "$DEBT_FILE" 2>/dev/null || echo "
 echo "  真实位置（无推断标注）："
 grep -cvE '（推断）|（需 Read 全文）' "$DEBT_FILE" 2>/dev/null || echo "  0"
 
+# 2.5 v2.4 本轮 #8：暂停阈值检查（P0 待验 ≥ 3 → 强烈建议暂停）
+p0_pending=$(grep -E '🔴 P0' "$DEBT_FILE" 2>/dev/null | grep -cE '（推断）|（需 Read 全文）' || echo 0)
+if [ "$p0_pending" -ge 3 ]; then
+  echo ""
+  echo "⚠️ 暂停建议：$p0_pending 个 P0 待人工 Read 全文确认（阈值 ≥ 3）"
+  echo "   强烈建议：先 Read 全文确认 P0 真实性，再写 12-修复建议"
+  echo "   否则 12 中的修复方案可能基于错误假设，浪费工作量"
+fi
+
 # 3. 提示用户做 diff
 echo ""
 echo "==> Diff 报告（建议人工跑 scan 后对照）："
