@@ -164,7 +164,7 @@ fi
 # 6. 创建父目录
 mkdir -p "$(dirname "$TARGET_DIR")"
 
-# 6.5 修复 P3-03：--dry-run 只打印不执行
+# 6.5 --dry-run 只打印不执行
 if [ "$DRY_RUN" = "true" ]; then
   echo "[DRY-RUN] 将创建: $TARGET_DIR -> $METHODOLOGY_DIR"
   echo "[DRY-RUN] 父目录: $(dirname "$TARGET_DIR")"
