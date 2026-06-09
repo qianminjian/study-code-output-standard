@@ -8,7 +8,7 @@
 
 set -e
 
-VERSION="2.3.0"
+VERSION="2.4.0"
 
 # 修复 P3-02：支持 --path 参数
 TARGET=""
