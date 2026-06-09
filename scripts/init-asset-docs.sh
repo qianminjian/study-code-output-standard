@@ -72,8 +72,9 @@ mkdir -p "$OUTPUT_DIR"
 
 # 5. 复制 12 份资产占位（带 frontmatter）
 # 修复 P2-01：白名单方式（仅复制 00-12 编号资产，跳过其它）
-echo "==> 复制 12 份资产占位"
-for n in 00 01 02 03 04 05 06 07 08 09 10 11 12; do
+# v2.3 TEST-ISSUES #9：循环加 13 号（反模式扫描报告）
+echo "==> 复制 13 份资产占位"
+for n in 00 01 02 03 04 05 06 07 08 09 10 11 12 13; do
   # 用通配符找 0N-*.md.tmpl
   for tmpl in "$METHODOLOGY_DIR/templates/${n}-"*.md.tmpl; do
     if [ -f "$tmpl" ]; then
@@ -92,13 +93,18 @@ if [ -f "$METHODOLOGY_DIR/templates/CLAUDE.md.tmpl" ]; then
 fi
 
 # 7. 创建资产变更日志
+# v2.3 TEST-ISSUES #14：标注 skill 版本与资产版本解耦
 cat > "$OUTPUT_DIR/CHANGELOG.md" <<EOF
 # Asset Docs Changelog
 
+> skill 版本：$(grep '^VERSION=' "$METHODOLOGY_DIR/install.sh" 2>/dev/null | head -1 | sed 's/VERSION="\(.*\)"/\1/')
+> 资产版本：1.0.0（asset version 与 skill version 解耦）
+
 ## [1.0.0] - $(date +%Y-%m-%d)
 ### 全部
-- 初版：12 篇资产 + 1 CHANGELOG + 1 README + 1 CLAUDE.md.tmpl
+- 初版：13 篇资产 + 1 CHANGELOG + 1 README + 1 CLAUDE.md.tmpl
 - 模板 / Prompt / 脚本 / references 全部留在 skill 安装目录（SKILL_HOME）
+- v2.3 起 init 复制 13-反模式扫描报告（TEST-ISSUES #9）
 EOF
 
 # 8. 创建资产说明 README
@@ -126,6 +132,7 @@ asset-docs/
 ├── 10-业务流图.md
 ├── 11-技术债与遗留项.md
 ├── 12-修复建议与优先级.md
+├── 13-反模式扫描报告.md
 ├── CHANGELOG.md
 ├── CLAUDE.md.tmpl
 └── README.md (本文件)
