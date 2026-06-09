@@ -138,7 +138,11 @@ description: |
 - Bash: `DOCS_DIR=${PROJECT_ROOT}/asset-docs bash ${SKILL_HOME}/scripts/check-all.sh`
   - v2.2 起 scripts 留在 `${SKILL_HOME}`（不再复制到用户项目，避免污染）
   - 向后兼容：老 `validate-all.sh` shim 仍可调，自动转 `check-all.sh`
+  - **v2.3 起** `check-all.sh` 不再静默报"全部校验通过"——子脚本 `exit 1` 会显式标 `==> 校验完成：N 个步骤失败`
 - 修复脚本报告的所有错误
+
+> ⚠️ **必须人工抽样 5-10 个端点 + 3-5 个业务流**，否则视为半成品——脚本只发现候选名单，最终正确性靠人。
+
 - 抽 5-10 个端点对照 Swagger / Postman 验证（人工）
 
 **⚠️ 无 Swagger / Postman 时的替代校验**（v2.2 新增）：
