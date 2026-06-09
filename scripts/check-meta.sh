@@ -8,7 +8,11 @@ set -e
 REQUIRED=("id" "version" "last_updated" "data_source" "owner" "ai_consumable")
 OPTIONAL=("code_version" "severity_taxonomy")
 DOCS_DIR="${DOCS_DIR:-asset-docs}"
-STALE_DAYS="${STALE_DAYS:-30}"
+# v2.5 调整：STALE_DAYS 30 → 90
+#   原因：archive_for_skill 实测（大项目 33 模块）跑完整 7 步法需 10+ min
+#   旧 30 天阈值对大项目太严——大项目不可能 30 天内跑一次
+#   大项目按 90 天，小项目可用 STALE_DAYS=30 覆盖
+STALE_DAYS="${STALE_DAYS:-90}"
 
 if [ ! -d "$DOCS_DIR" ]; then
   echo "ERROR: $DOCS_DIR 目录不存在"

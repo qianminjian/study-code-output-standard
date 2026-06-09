@@ -55,6 +55,30 @@ scan_label() {
 
 echo "==> 扫描配置：SRC_DIR=$SRC_DIR  XML_DIR=$XML_DIR  WEB_SRC=$WEB_SRC"
 echo "==> 反模式标签 24 个（v2.3 满覆盖）"
+
+# v2.5 占位资产检测（archive_for_skill 测试时发现）：
+# 占位资产（行数 < 30 + 含 `<YYYY-MM-DD>` 占位符）会**误报 clean**，
+# 因为没实际代码可扫。先列出占位资产，扫描时跳过它们。
+echo ""
+echo "=== 占位资产检测 ==="
+placeholder_count=0
+if [ -d "$DOCS_DIR" ]; then
+  for f in "$DOCS_DIR"/[0-9][0-9]-*.md; do
+    [ -f "$f" ] || continue
+    lines=$(wc -l < "$f" | tr -d ' ')
+    if [ "$lines" -lt 30 ]; then
+      echo "  ⚠ $(basename "$f") —— ${lines} 行（占位阈值 30）"
+      placeholder_count=$((placeholder_count+1))
+    fi
+  done
+  if [ "$placeholder_count" -gt 0 ]; then
+    echo "  → 共 $placeholder_count 篇占位资产（建议先实写再跑 scan 才有意义）"
+  else
+    echo "  → 无占位资产（全部 ≥ 30 行）"
+  fi
+else
+  echo "  (目录 $DOCS_DIR 不存在，跳过)"
+fi
 echo ""
 
 # ==================== P0 标签 ====================
