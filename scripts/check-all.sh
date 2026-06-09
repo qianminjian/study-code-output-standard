@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# validate-all.sh — 一键跑所有校验
-# 用法：bash scripts/validate-all.sh
+# check-all.sh — 一键跑所有校验（v2.2 起替代 validate-all.sh）
+# 用法：bash scripts/check-all.sh
+# 向后兼容：bash scripts/validate-all.sh 仍可跑（shim 转调本脚本）
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
