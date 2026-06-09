@@ -12,7 +12,7 @@ set -e
 TARGET="${1:-${PWD}}"
 TARGET="$(cd "$TARGET" 2>/dev/null && pwd || echo "$TARGET")"
 
-# 1. 推断方法论根目录（通过脚本路径）
+# 1. 推断 skill 根目录（重构 v2.1：scripts/ 在仓库根下，仓库根即 skill 根）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
 
 # 兼容 Git Bash on Windows（路径可能含 /c/...）
@@ -20,21 +20,21 @@ if [ -z "$SCRIPT_DIR" ] || [ ! -d "$SCRIPT_DIR" ]; then
   # 退化方案：从当前工作目录向上找
   CUR="$(pwd)"
   for i in 1 2 3 4 5; do
-    if [ -f "$CUR/docs/00-总览与方法论.md" ]; then
-      SCRIPT_DIR="$CUR/docs/scripts"
+    if [ -f "$CUR/methodology/00-总览与方法论.md" ]; then
+      SCRIPT_DIR="$CUR/scripts"
       break
     fi
     CUR="$(dirname "$CUR")"
   done
 fi
 
-if [ -z "$SCRIPT_DIR" ] || [ ! -f "$SCRIPT_DIR/../../docs/00-总览与方法论.md" ]; then
+if [ -z "$SCRIPT_DIR" ] || [ ! -f "$SCRIPT_DIR/../methodology/00-总览与方法论.md" ]; then
   echo "ERROR: 无法定位方法论根目录"
   echo "  请通过 install.sh 安装后由 Claude Code 调用"
   exit 1
 fi
 
-METHODOLOGY_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+METHODOLOGY_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_DIR="$TARGET/asset-docs"
 
 echo "==> 方法论根目录: $METHODOLOGY_DIR"
@@ -73,7 +73,7 @@ mkdir -p "$OUTPUT_DIR"/{templates,ai-prompts,references,scripts}
 echo "==> 复制 12 份资产占位"
 for n in 00 01 02 03 04 05 06 07 08 09 10 11 12; do
   # 用通配符找 0N-*.md.tmpl
-  for tmpl in "$METHODOLOGY_DIR/docs/templates/${n}-"*.md.tmpl; do
+  for tmpl in "$METHODOLOGY_DIR/templates/${n}-"*.md.tmpl; do
     if [ -f "$tmpl" ]; then
       name="$(basename "$tmpl" .md.tmpl)"
       cp "$tmpl" "$OUTPUT_DIR/$name.md"
@@ -84,17 +84,17 @@ done
 
 # 6. 复制 templates/ 副本
 echo "==> 复制 templates/"
-cp -R "$METHODOLOGY_DIR/docs/templates/." "$OUTPUT_DIR/templates/"
+cp -R "$METHODOLOGY_DIR/templates/." "$OUTPUT_DIR/templates/"
 
 # 7. 复制 ai-prompts/ 副本
 echo "==> 复制 ai-prompts/"
-cp -R "$METHODOLOGY_DIR/docs/ai-prompts/." "$OUTPUT_DIR/ai-prompts/"
+cp -R "$METHODOLOGY_DIR/ai-prompts/." "$OUTPUT_DIR/ai-prompts/"
 
 # 8. 复制校验脚本
 echo "==> 复制 scripts/"
 for s in check-meta.sh check-severity.sh check-consistency.sh scan-antipatterns.sh validate-all.sh; do
-  if [ -f "$METHODOLOGY_DIR/docs/scripts/$s" ]; then
-    cp "$METHODOLOGY_DIR/docs/scripts/$s" "$OUTPUT_DIR/scripts/$s"
+  if [ -f "$METHODOLOGY_DIR/scripts/$s" ]; then
+    cp "$METHODOLOGY_DIR/scripts/$s" "$OUTPUT_DIR/scripts/$s"
   fi
 done
 # 修复 P3-01：chmod 失败不吞错（set -e 已开启，失败会退出）
@@ -102,8 +102,8 @@ chmod +x "$OUTPUT_DIR/scripts/"*.sh
 
 # 9. 复制 references/（方法论摘要）
 echo "==> 复制 references/"
-if [ -d "$METHODOLOGY_DIR/skill/references" ]; then
-  cp -R "$METHODOLOGY_DIR/skill/references/." "$OUTPUT_DIR/references/"
+if [ -d "$METHODOLOGY_DIR/references" ]; then
+  cp -R "$METHODOLOGY_DIR/references/." "$OUTPUT_DIR/references/"
 fi
 
 # 10. 创建资产变更日志

@@ -13,7 +13,8 @@ description: |
 > **路径约定**：本文档用以下占位符描述路径，**Claude 须用实际项目根目录替换**：
 > - `<项目根>` = 用户调用 skill 时所在的项目根目录（默认 `pwd`）
 > - `<指定项目>` = 用户用 `--path <path>` 显式指定的项目目录
-> - `<skill 目录>` = 本 skill 安装位置（一般是 `~/.claude/skills/study-code-output-standard/` 或项目级 `.claude/skills/study-code-output-standard/`）
+> - `<skill 目录>` = 本 skill 安装位置（即仓库根目录，安装后是 `~/.claude/skills/study-code-output-standard/`）
+> - **本 skill v2.1 起采用扁平布局**：SKILL.md、scripts/、references/、templates/、ai-prompts/、methodology/ 都直接在 `<skill 目录>` 下
 > - **不要把 `<项目根>` 当作 shell 变量执行**（不存在 `${项目根}` 这种 bash 语法）
 
 ## 触发条件
@@ -213,5 +214,5 @@ description: |
 | 字段 | 值 |
 |---|---|
 | 配套 | references/{methodology,asset-types,anti-patterns}.md |
-| 安装 | skill/install.sh (Mac/Linux) / install.ps1 (Windows) |
+| 安装 | install.sh (Mac/Linux) / install.ps1 (Windows) |
 | 适用 | Claude Code 0.2+ / Cursor 0.30+ / Copilot Workspace |

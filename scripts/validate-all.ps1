@@ -1,7 +1,7 @@
 # validate-all.ps1 — 一键跑所有校验（Windows）
 # 用法：powershell -ExecutionPolicy Bypass -File validate-all.ps1 [-TargetDir <dir>]
 #
-# 策略：复用 docs/scripts/ 下的 bash 脚本（需先安装 Git Bash）
+# 策略：复用同目录下的 bash 脚本（需先安装 Git Bash）
 # 配套：validate-all.sh（Mac / Linux / Git Bash）
 
 [CmdletBinding()]

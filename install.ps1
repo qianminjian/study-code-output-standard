@@ -31,9 +31,9 @@ if ($Help) {
     exit 0
 }
 
-# 定位方法论根目录
+# 定位 skill 根目录（重构 v2.1：仓库根 = skill 根 = SKILL.md 所在目录）
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$MethodologyDir = Split-Path -Parent $ScriptDir
+$MethodologyDir = $ScriptDir
 
 if (-not (Test-Path "$MethodologyDir\SKILL.md")) {
     Write-Host "ERROR: 找不到 SKILL.md，方法论根目录不正确: $MethodologyDir" -ForegroundColor Red

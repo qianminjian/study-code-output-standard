@@ -15,7 +15,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # 2. 跑 init
 echo "[T1] init-asset-docs.sh 创建 12 篇资产"
-bash "$REPO_ROOT/skill/scripts/init-asset-docs.sh" "$TEST_DIR" </dev/null >/dev/null 2>&1
+bash "$REPO_ROOT/scripts/init-asset-docs.sh" "$TEST_DIR" </dev/null >/dev/null 2>&1
 ASSET_DIR="$TEST_DIR/asset-docs"
 [ -d "$ASSET_DIR" ] || { echo "FAIL: $ASSET_DIR 未创建"; exit 1; }
 echo "  ✓ 资产目录已创建"
@@ -84,7 +84,7 @@ echo "  ✓ check-meta.sh 通过"
 
 # 9. write-claude-asset.sh 12 篇资产全部缺失不报错（缺失行 —）
 echo "[T8] write-claude-asset.sh 生成 CLAUDE-ASSET.md"
-bash "$REPO_ROOT/skill/scripts/write-claude-asset.sh" "$TEST_DIR" </dev/null >/dev/null 2>&1
+bash "$REPO_ROOT/scripts/write-claude-asset.sh" "$TEST_DIR" </dev/null >/dev/null 2>&1
 if [ ! -f "$TEST_DIR/CLAUDE-ASSET.md" ]; then
   echo "FAIL: CLAUDE-ASSET.md 未生成"
   exit 1
@@ -94,7 +94,7 @@ printf '  ✓ CLAUDE-ASSET.md（%s 行）\n' "$LINES"
 
 # 10. write-claude-index.sh 生成 CLAUDE.md（≤ 80 行）
 echo "[T9] write-claude-index.sh 生成 CLAUDE.md（≤ 80 行）"
-bash "$REPO_ROOT/skill/scripts/write-claude-index.sh" "$TEST_DIR" </dev/null >/dev/null 2>&1
+bash "$REPO_ROOT/scripts/write-claude-index.sh" "$TEST_DIR" </dev/null >/dev/null 2>&1
 if [ ! -f "$TEST_DIR/CLAUDE.md" ]; then
   echo "FAIL: CLAUDE.md 未生成"
   exit 1

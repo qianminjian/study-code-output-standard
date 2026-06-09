@@ -24,13 +24,16 @@
 
 ---
 
-## v2 重大更新：Skill 封装
+## v2.1：扁平化 Skill 布局
 
-整个方法论已封装为 Claude Code Skill：
+整个方法论已封装为 Claude Code Skill，**仓库根目录即 skill 根**：
 
 ```
-study-code-output-standard/
-├── docs/                              ← 9 篇方法论文档（00-08）
+study-code-output-standard/                ← = ~/.claude/skills/study-code-output-standard/
+├── SKILL.md                               ← Claude Code 加载入口（顶层）
+├── install.sh + install.ps1               ← 跨平台安装
+├── uninstall.sh + uninstall.ps1
+├── methodology/                           ← 9 篇方法论文档（00-08）
 │   ├── 00-总览与方法论.md
 │   ├── 01-资产清单与适用场景.md
 │   ├── 02-目录与命名规范.md
@@ -39,26 +42,24 @@ study-code-output-standard/
 │   ├── 05-AI协作与Prompt模板.md
 │   ├── 06-质量门禁与自检清单.md
 │   ├── 07-典型案例与反模式.md
-│   ├── 08-新项目接入指南.md          ← v2 升级到 Skill 模式
-│   ├── templates/        (12 份)
-│   ├── ai-prompts/       (12 份 + 全流程启动)
-│   ├── examples/         (1 份 wxcbrc 案例)
-│   └── scripts/          (5 校验脚本)
-├── skill/                             ← v2 新增：Skill 入口
-│   ├── SKILL.md                       ← Claude 读的入口
-│   ├── install.sh + install.ps1       ← 跨平台安装
-│   ├── uninstall.sh + uninstall.ps1
-│   ├── references/                    ← 分层参考
-│   │   ├── methodology.md
-│   │   ├── asset-types.md
-│   │   └── anti-patterns.md
-│   └── scripts/                       ← 4 个核心脚本（+ 3 个 PowerShell 等价）
-│       ├── init-asset-docs.sh         ← 创建 asset-docs/ 骨架
-│       ├── write-claude-index.sh      ← 生成 CLAUDE.md 轻量索引
-│       ├── write-claude-asset.sh      ← 生成 CLAUDE-ASSET.md 详情
-│       ├── init-asset-docs.ps1        ← Windows PowerShell 等价
-│       ├── write-claude-index.ps1
-│       └── write-claude-asset.ps1
+│   └── 08-新项目接入指南.md
+├── templates/                             ← 12 份资产模板
+├── ai-prompts/                            ← 13 份 AI Prompt（00-12）
+├── examples/                              ← wxcbrc 案例
+├── references/                            ← 分层参考
+│   ├── methodology.md
+│   ├── asset-types.md
+│   └── anti-patterns.md
+├── scripts/                               ← 安装时调用 + 复制到目标项目
+│   ├── init-asset-docs.sh / .ps1          ← 创建 asset-docs/ 骨架
+│   ├── write-claude-index.sh / .ps1       ← 生成 CLAUDE.md 轻量索引
+│   ├── write-claude-asset.sh / .ps1       ← 生成 CLAUDE-ASSET.md 详情
+│   ├── check-meta.sh                      ← 5 份资产校验脚本
+│   ├── check-severity.sh
+│   ├── check-consistency.sh
+│   ├── scan-antipatterns.sh
+│   └── validate-all.sh / .ps1
+├── tests/                                 ← 4 套自动化测试
 └── README.md
 ```
 
@@ -68,7 +69,7 @@ study-code-output-standard/
 
 ```bash
 # 1. 安装 Skill（一次性）
-bash <methodology-repo>/skill/install.sh --personal
+bash <methodology-repo>/install.sh --personal
 
 # 2. 在任意项目调用
 cd /path/to/target-app
@@ -79,7 +80,7 @@ claude
 # 4. 同时自动生成 ./CLAUDE.md（轻量索引）和 ./CLAUDE-ASSET.md（详情）
 ```
 
-详细说明见 [docs/08-新项目接入指南.md](docs/08-新项目接入指南.md)。
+详细说明见 [methodology/08-新项目接入指南.md](methodology/08-新项目接入指南.md)。
 
 ---
 
@@ -176,23 +177,23 @@ L5 诊断层    11-技术债 / 12-修复
 
 | 平台 | 命令 |
 |---|---|
-| Mac | `bash skill/install.sh --personal` |
-| Linux | `bash skill/install.sh --personal` |
-| Windows Git Bash | `bash skill/install.sh --personal` |
-| Windows PowerShell | `powershell -ExecutionPolicy Bypass -File skill/install.ps1 -Personal` |
+| Mac | `bash install.sh --personal` |
+| Linux | `bash install.sh --personal` |
+| Windows Git Bash | `bash install.sh --personal` |
+| Windows PowerShell | `powershell -ExecutionPolicy Bypass -File install.ps1 -Personal` |
 
 > **Windows 完整流程**：
 > ```powershell
 > # 安装
-> powershell -ExecutionPolicy Bypass -File skill/install.ps1 -Personal
+> powershell -ExecutionPolicy Bypass -File install.ps1 -Personal
 >
 > # 创建资产骨架
 > cd <目标项目>
-> powershell -ExecutionPolicy Bypass -File <skill>/scripts/init-asset-docs.ps1 -TargetDir .
+> powershell -ExecutionPolicy Bypass -File <skill-root>/scripts/init-asset-docs.ps1 -TargetDir .
 >
 > # 生成 CLAUDE.md（Windows 用户需先安装 Git Bash）
-> powershell -ExecutionPolicy Bypass -File <skill>/scripts/write-claude-index.ps1 -TargetDir .
-> powershell -ExecutionPolicy Bypass -File <skill>/scripts/write-claude-asset.ps1 -TargetDir .
+> powershell -ExecutionPolicy Bypass -File <skill-root>/scripts/write-claude-index.ps1 -TargetDir .
+> powershell -ExecutionPolicy Bypass -File <skill-root>/scripts/write-claude-asset.ps1 -TargetDir .
 >
 > # 校验（依赖 Git Bash）
 > bash asset-docs/scripts/validate-all.sh
@@ -229,6 +230,6 @@ L5 诊断层    11-技术债 / 12-修复
 | 字段 | 值 |
 |---|---|
 | 整理时间 | 2026-06-08 |
-| 版本 | 2.0（v2: Skill 化） |
+| 版本 | 2.1（v2.1: 扁平化 Skill 布局） |
 | 维护 | Tech Lead 团队 |
 | 配套实施 | 12 模板 + 12 Prompt + 5 脚本 + 1 案例 + Skill 封装 |

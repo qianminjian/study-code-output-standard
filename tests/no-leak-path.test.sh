@@ -2,7 +2,7 @@
 # no-leak-path.test.sh — 扫描本仓库，确保无 /Users/minjianq 等真实绝对路径泄露
 # 用法：bash tests/no-leak-path.test.sh
 #
-# 背景：docs/examples/wxcbrc-case.md 曾出现 /Users/minjianq/... 真实路径，已脱敏为 <保密路径>
+# 背景：examples/wxcbrc-case.md 曾出现 /Users/minjianq/... 真实路径，已脱敏为 <保密路径>
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
@@ -42,7 +42,7 @@ echo "  ✓ 无明显真实路径"
 
 # 3. 校验 wxcbrc-case.md 使用 <保密路径> 占位符
 echo "[T3] 校验 wxcbrc-case.md 使用 <保密路径> 占位"
-EXAMPLE="$REPO_ROOT/docs/examples/wxcbrc-case.md"
+EXAMPLE="$REPO_ROOT/examples/wxcbrc-case.md"
 [ -f "$EXAMPLE" ] || { echo "FAIL: wxcbrc-case.md 不存在"; exit 1; }
 grep -q "<保密路径>" "$EXAMPLE" || { echo "FAIL: wxcbrc-case.md 未用 <保密路径> 占位符"; exit 1; }
 # 同时确认不含真实路径

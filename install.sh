@@ -77,13 +77,13 @@ EOF
   esac
 done
 
-# 1. 定位方法论根目录
+# 1. 定位 skill 根目录（重构 v2.1：仓库根 = skill 根 = SKILL.md 所在目录）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
 if [ -z "$SCRIPT_DIR" ] || [ ! -d "$SCRIPT_DIR" ]; then
   echo "ERROR: 无法定位 skill 目录"
   exit 1
 fi
-METHODOLOGY_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+METHODOLOGY_DIR="$SCRIPT_DIR"
 
 if [ ! -f "$SCRIPT_DIR/SKILL.md" ]; then
   echo "ERROR: 找不到 SKILL.md，方法论根目录不正确: $SCRIPT_DIR"

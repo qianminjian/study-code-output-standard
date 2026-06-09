@@ -13,23 +13,24 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# 1. 推断方法论根目录
+# 1. 推断 skill 根目录（重构 v2.1：scripts/ 在仓库根下，仓库根即 skill 根）
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$MethodologyDir = Split-Path -Parent $ScriptDir
 
-if (-not (Test-Path "$ScriptDir\..\SKILL.md")) {
+if (-not (Test-Path "$MethodologyDir\SKILL.md")) {
     # 退化：从当前工作目录向上找
     $cur = (Get-Location).Path
     for ($i = 0; $i -lt 5; $i++) {
         if (Test-Path "$cur\SKILL.md") {
-            $ScriptDir = $cur
+            $MethodologyDir = $cur
             break
         }
         $cur = Split-Path -Parent $cur
     }
 }
 
-if (-not (Test-Path "$ScriptDir\SKILL.md")) {
-    Write-Host "ERROR: 找不到 SKILL.md，方法论根目录不正确: $ScriptDir" -ForegroundColor Red
+if (-not (Test-Path "$MethodologyDir\SKILL.md")) {
+    Write-Host "ERROR: 找不到 SKILL.md，方法论根目录不正确: $MethodologyDir" -ForegroundColor Red
     exit 1
 }
 
@@ -42,7 +43,6 @@ if (-not (Test-Path $TargetDir)) {
     exit 1
 }
 
-$MethodologyDir = $ScriptDir
 $OutputDir = Join-Path $TargetDir "asset-docs"
 
 Write-Host "==> 方法论根目录: $MethodologyDir"
@@ -81,7 +81,7 @@ New-Item -ItemType Directory -Path (Join-Path $OutputDir "scripts") -Force | Out
 
 # 5. 复制 12 篇资产占位（带 frontmatter）
 Write-Host "==> 复制 12 份资产占位"
-$templatesDir = Join-Path $MethodologyDir "docs\templates"
+$templatesDir = Join-Path $MethodologyDir "templates"
 $skipPattern = "^(CLAUDE|CHANGELOG)"
 
 Get-ChildItem -Path $templatesDir -Filter "*.md.tmpl" | ForEach-Object {
@@ -101,7 +101,7 @@ Copy-Item -Path (Join-Path $templatesDir "*") `
 
 # 7. 复制 ai-prompts/
 Write-Host "==> 复制 ai-prompts\"
-$aiPromptsDir = Join-Path $MethodologyDir "docs\ai-prompts"
+$aiPromptsDir = Join-Path $MethodologyDir "ai-prompts"
 if (Test-Path $aiPromptsDir) {
     Copy-Item -Path (Join-Path $aiPromptsDir "*") `
               -Destination (Join-Path $OutputDir "ai-prompts") `
@@ -110,7 +110,7 @@ if (Test-Path $aiPromptsDir) {
 
 # 8. 复制校验脚本
 Write-Host "==> 复制 scripts\"
-$scriptsSrcDir = Join-Path $MethodologyDir "docs\scripts"
+$scriptsSrcDir = Join-Path $MethodologyDir "scripts"
 $scriptsDstDir = Join-Path $OutputDir "scripts"
 $scripts = @("check-meta.sh", "check-severity.sh", "check-consistency.sh", "scan-antipatterns.sh", "validate-all.sh")
 foreach ($s in $scripts) {
@@ -122,7 +122,7 @@ foreach ($s in $scripts) {
 
 # 9. 复制 references/
 Write-Host "==> 复制 references\"
-$referencesDir = Join-Path $MethodologyDir "skill\references"
+$referencesDir = Join-Path $MethodologyDir "references"
 if (Test-Path $referencesDir) {
     Copy-Item -Path (Join-Path $referencesDir "*") `
               -Destination (Join-Path $OutputDir "references") `
