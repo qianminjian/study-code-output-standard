@@ -32,7 +32,7 @@ while [ $i -lt ${#ARGS[@]} ]; do
     --project) MODE="project"; i=$((i+1)) ;;
     --path)
       i=$((i+1))
-      # 修复 P1-01：--path 后无值时报错退出（而非静默回退交互模式）
+      # --path 后无值时报错退出（而非静默回退交互模式）
       if [ $i -ge ${#ARGS[@]} ]; then
         echo "ERROR: --path 需要指定目标目录" >&2
         echo "  用法: bash install.sh --path <dir>" >&2
@@ -114,7 +114,7 @@ fi
 # 4. 计算目标目录
 case "$MODE" in
   personal)
-    # 修复 P1-02：HOME/USERPROFILE 双空时显式报错，避免安装到 / 下
+    # HOME/USERPROFILE 双空时显式报错，避免安装到 / 下
     if [ -z "$HOME" ] && [ -z "$USERPROFILE" ]; then
       echo "ERROR: personal 模式需要 HOME 或 USERPROFILE 环境变量" >&2
       echo "  HOME=$HOME" >&2
@@ -153,7 +153,7 @@ if [ -e "$TARGET_DIR" ]; then
         *) echo "已取消"; exit 1 ;;
       esac
     else
-      # 修复 P1-03：非交互模式非 --force 时显式报错（不静默 exit 0）
+      # 非交互模式非 --force 时显式报错（不静默 exit 0）
       echo "  ERROR: 非交互模式且未指定 --force，拒绝覆盖" >&2
       echo "  解决: bash install.sh ... --force" >&2
       exit 2

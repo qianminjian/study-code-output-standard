@@ -10,7 +10,7 @@ set -e
 
 VERSION="2.4.0"
 
-# 修复 P3-02：支持 --path 参数
+# 支持 --path 参数
 TARGET=""
 case "${1:-}" in
   --path)
@@ -46,7 +46,7 @@ EOF
     ;;
 esac
 
-# 修复 P2-08：Windows 路径统一用 cygpath 转 Unix 风格
+# Windows 路径统一用 cygpath 转 Unix 风格
 HOME_NIX="$HOME"
 USERPROFILE_NIX="$USERPROFILE"
 if command -v cygpath >/dev/null 2>&1; then
