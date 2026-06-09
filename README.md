@@ -33,7 +33,7 @@ study-code-output-standard/                ← = ~/.claude/skills/study-code-out
 ├── SKILL.md                               ← Claude Code 加载入口（顶层）
 ├── install.sh + install.ps1               ← 跨平台安装
 ├── uninstall.sh + uninstall.ps1
-├── methodology/                           ← 9 篇方法论文档（00-08）
+├── references/methodology/                           ← 9 篇方法论文档（00-08）
 │   ├── 00-总览与方法论.md
 │   ├── 01-资产清单与适用场景.md
 │   ├── 02-目录与命名规范.md
@@ -43,8 +43,8 @@ study-code-output-standard/                ← = ~/.claude/skills/study-code-out
 │   ├── 06-质量门禁与自检清单.md
 │   ├── 07-典型案例与反模式.md
 │   └── 08-新项目接入指南.md
-├── templates/                             ← 12 份资产模板
-├── ai-prompts/                            ← 13 份 AI Prompt（00-12）
+├── assets/                             ← 12 份资产模板
+├── references/prompts/                            ← 13 份 AI Prompt（00-12）
 ├── examples/                              ← wxcbrc 案例
 ├── references/                            ← 分层参考
 │   ├── methodology.md
@@ -80,7 +80,7 @@ claude
 # 4. 同时自动生成 ./CLAUDE.md（轻量索引）和 ./CLAUDE-ASSET.md（详情）
 ```
 
-详细说明见 [methodology/08-新项目接入指南.md](methodology/08-新项目接入指南.md)。
+详细说明见 [references/methodology/08-新项目接入指南.md](references/methodology/08-新项目接入指南.md)。
 
 ---
 
@@ -97,8 +97,8 @@ target-app/
     ├── 01-系统总览.md
     ├── ... (02-12)
     ├── CHANGELOG.md
-    ├── templates/      (12 份)
-    ├── ai-prompts/     (12 份)
+    ├── assets/      (12 份)
+    ├── references/prompts/     (12 份)
     ├── references/     (3 份)
     └── scripts/        (5 个)
 ```

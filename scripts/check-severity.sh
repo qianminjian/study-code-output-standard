@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # check-severity.sh — 校验严重度字段
 # 用法：bash scripts/check-severity.sh
-# 默认排除 templates/ 和 ai-prompts/ 子目录（这两个目录是教学副本）
+# 默认排除 assets/ 和 references/prompts/ 子目录（这两个目录是教学副本）
 # 可通过 SEVERITY_INCLUDE_DIRS 环境变量覆盖
 set -e
 
 DOCS_DIR="${DOCS_DIR:-asset-docs}"
 
-# 修复 P2-03：默认排除 templates/ 和 ai-prompts/（教学副本会污染统计）
+# 修复 P2-03：默认排除 assets/ 和 references/prompts/（教学副本会污染统计）
 INCLUDE_ARGS=()
 if [ -n "$SEVERITY_INCLUDE_DIRS" ]; then
   for d in $SEVERITY_INCLUDE_DIRS; do

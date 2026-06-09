@@ -3,7 +3,7 @@
 # 用法：bash init-asset-docs.sh [target-dir]
 #   target-dir 默认 ${PWD}
 #
-# v2.2 变更：不再复制 templates/ai-prompts/scripts/references 4 个目录（24+ 文件冗余污染用户项目）。
+# v2.2 变更：不再复制 assets/references/prompts/scripts/references 4 个目录（24+ 文件冗余污染用户项目）。
 #           这 4 个目录全部留在 skill 安装目录，模板/校验脚本由 SKILL_HOME 解析。
 #   效果：${TARGET}/asset-docs/ 含 12 篇资产占位 + 1 CHANGELOG + 1 README + 1 CLAUDE.md.tmpl
 
@@ -24,7 +24,7 @@ if [ -z "$SCRIPT_DIR" ] || [ ! -d "$SCRIPT_DIR" ]; then
   # 退化方案：从当前工作目录向上找
   CUR="$(pwd)"
   for i in 1 2 3 4 5; do
-    if [ -f "$CUR/methodology/00-总览与方法论.md" ]; then
+    if [ -f "$CUR/references/methodology/00-总览与方法论.md" ]; then
       SCRIPT_DIR="$CUR/scripts"
       break
     fi
@@ -32,7 +32,7 @@ if [ -z "$SCRIPT_DIR" ] || [ ! -d "$SCRIPT_DIR" ]; then
   done
 fi
 
-if [ -z "$SCRIPT_DIR" ] || [ ! -f "$SCRIPT_DIR/../methodology/00-总览与方法论.md" ]; then
+if [ -z "$SCRIPT_DIR" ] || [ ! -f "$SCRIPT_DIR/../references/methodology/00-总览与方法论.md" ]; then
   echo "ERROR: 无法定位方法论根目录"
   echo "  请通过 install.sh 安装后由 Claude Code 调用"
   exit 1
@@ -78,7 +78,7 @@ if [ -d "$OUTPUT_DIR" ]; then
   fi
 fi
 
-# 4. 创建目录结构（v2.2：不再创建 templates/ai-prompts/scripts/references 4 个子目录）
+# 4. 创建目录结构（v2.2：不再创建 assets/references/prompts/scripts/references 4 个子目录）
 #    这些目录的内容全部留在 skill 安装目录（SKILL_HOME）
 mkdir -p "$OUTPUT_DIR"
 
@@ -90,7 +90,7 @@ SKILL_VERSION="2.4"
 echo "==> 复制 13 份资产占位"
 for n in 00 01 02 03 04 05 06 07 08 09 10 11 12 13; do
   # 用通配符找 0N-*.md.tmpl
-  for tmpl in "$METHODOLOGY_DIR/templates/${n}-"*.md.tmpl; do
+  for tmpl in "$METHODOLOGY_DIR/assets/${n}-"*.md.tmpl; do
     if [ -f "$tmpl" ]; then
       name="$(basename "$tmpl" .md.tmpl)"
       cp "$tmpl" "$OUTPUT_DIR/$name.md"
@@ -101,8 +101,8 @@ done
 
 # 6. 复制 CLAUDE.md.tmpl（#12 修复：附加资产单独 cp）
 echo "==> 复制 CLAUDE.md.tmpl"
-if [ -f "$METHODOLOGY_DIR/templates/CLAUDE.md.tmpl" ]; then
-  cp "$METHODOLOGY_DIR/templates/CLAUDE.md.tmpl" "$OUTPUT_DIR/CLAUDE.md.tmpl"
+if [ -f "$METHODOLOGY_DIR/assets/CLAUDE.md.tmpl" ]; then
+  cp "$METHODOLOGY_DIR/assets/CLAUDE.md.tmpl" "$OUTPUT_DIR/CLAUDE.md.tmpl"
   echo "  + CLAUDE.md.tmpl"
 fi
 
@@ -164,7 +164,7 @@ asset-docs/
 └── README.md (本文件)
 \`\`\`
 
-> **v2.2 起**：templates/、ai-prompts/、scripts/、references/ **不再复制** 到用户项目。
+> **v2.2 起**：assets/、references/prompts/、scripts/、references/ **不再复制** 到用户项目。
 > 模板/校验脚本/Prompt 全部留在 skill 安装目录（SKILL_HOME，约 ~/.claude/skills/study-code-output-standard/）。
 > 这样避免 24+ 文件冗余污染用户项目。
 

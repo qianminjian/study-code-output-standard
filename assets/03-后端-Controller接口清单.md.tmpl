@@ -1,0 +1,69 @@
+<!--
+@meta {
+  "id": "03-后端-Controller接口清单",
+  "version": "0.1.0",
+  "last_updated": "<YYYY-MM-DD>",
+  "data_source": "<来源>",
+  "code_version": "<可选:git:<hash> | <unversioned> | 留空>",
+  "owner": "<团队>",
+  "ai_consumable": true,
+  "severity_taxonomy": "P0|P1|P2|P3"
+}
+-->
+<!-- @prompt: ../references/prompts/03-后端-Controller接口清单.md (单点真源，references/prompts/03-后端-Controller接口清单.md 是维护入口) -->
+<!-- 上面 @prompt 引用 references/prompts/ 目录下的同名文件。修改本模板时同步刷 references/prompts/03-后端-Controller接口清单.md。 -->
+
+# 03 · 后端 Controller 接口清单
+
+> 共 N 个 Controller。所有路径前缀 `<prefix>`。
+> v2.4 改进：**§1 摘要表合并原 §1 概览 + §1-B 摘要**，单一数据源，避免双处数字不一致。
+
+## 1. 摘要表（v2.4 必填 · check-consistency 对账 · 单一数据源）
+
+> 本表是 check-consistency.sh 校验的**唯一**数据源——**端点数 / 公开端点数 列数字必须与代码 grep 数严格对齐**。
+> 严禁再在别处维护第二份"端点总数"（v2.3 的 §1-B 数字与 §1 概览不一致导致 mismatch，本版本已合并）。
+
+| Controller | 前缀 | Api tags | 端点数 | 公开端点数 | 鉴权策略 | 全局前缀 | Swagger 启用 |
+|---|---|---|:-:|:-:|---|---|---|
+| <Controller> | <prefix> | <tags> | <N> | <N> | @PreAuthorize / permitAll / @CrossOrigin | <无/api/v1> | <是/否> |
+
+> **check-consistency 对账命令**（自动跑）：
+> - 端点总数 = 表格"端点数"列之和 = `grep -rE "@(Get\|Post\|Put\|Delete)Mapping" <controller-dir> \| wc -l`（**必须相等**）
+> - Controller 总数 = 表格行数 = `find <controller-dir> -name "*Controller.java" \| wc -l`
+> - 公开端点总数 = 表格"公开端点数"列之和 ≈ `grep -rl "@CrossOrigin" <controller-dir> \| wc -l`（粗略，公开端点不一定都在 @CrossOrigin 注解上）
+
+> 标注 ⚠️ 的是 `@Api(tags=...)` 错误标签。
+
+## 2. 详细接口清单
+
+### 2.1 <Controller>（`<prefix>`）
+| 方法 | 路径 | 入参 | 鉴权 | 公开 | 说明 |
+|---|---|---|---|:-:|---|
+| GET | `/path` | <入参> | <权限> | ✅/— | <说明> |
+| POST | `/path` | <入参> | <权限> | ✅/— | <说明> |
+
+> 详表内容可分文件：`asset-docs/03-端点详情-<Controller>.md`，本节保持精简。
+
+## 3. 权限字符串全集（去重）
+
+| 子系统 | 资源 | view | add | edit | delete | upload | download |
+|---|---|---|---|---|---|---|---|
+| <sys> | <res> | ✅ | ✅ | ✅ | ✅ | — | — |
+
+> 共 N 个独立权限串，存在 N 处错用/复用：
+> 1. <位置>: 错用 X
+> 2. ...
+
+## 4. 公开端点（无需 token）
+
+| 端点 | 用途 | 备注 |
+|---|---|---|
+| `<path>` | <用途> | <备注> |
+
+## 元信息
+
+| 字段 | 值 |
+|---|---|
+| 端点验证 | `grep -rE "@(Get\|Post\|Put\|Delete)Mapping" <controller-dir> \| wc -l` |
+| Swagger 校对 | 访问 `<swagger-url>` |
+| check-consistency 对账 | **§1 摘要表"端点数"列之和** = 实际 grep 数（v2.4 唯一数据源）|

@@ -5,7 +5,7 @@
 # 策略：CLAUDE.md ≤ 80 行，标注"按需加载 CLAUDE-ASSET.md"
 #
 # v2.3 修复（修 TEST-ISSUES #1 #2）：
-# 1. 引用路径全改 ${SKILL_HOME}（v2.2 起 scripts/ templates/ ai-prompts/ references/ 全部在 SKILL_HOME）
+# 1. 引用路径全改 ${SKILL_HOME}（v2.2 起 scripts/ assets/ references/prompts/ references/ 全部在 SKILL_HOME）
 # 2. 加 13-反模式扫描报告到必读/AI 编程喂入列表
 
 set -e
@@ -74,20 +74,20 @@ bash \${SKILL_HOME}/scripts/validate-all.sh
 的规范，实现 XXX 接口。
 \`\`\`
 
-## 按需加载（v2.2 路径 · scripts/ templates/ ai-prompts/ references/ 全部在 \${SKILL_HOME}）
+## 按需加载（v2.2 路径 · scripts/ assets/ references/prompts/ references/ 全部在 \${SKILL_HOME}）
 
 | 需要看 | 加载文件 |
 |---|---|
 | 13 篇资产详细清单 | \`CLAUDE-ASSET.md\` |
 | 单篇资产详情 | \`asset-docs/<NN>-<name>.md\` |
-| 模板（仅供 review，不复制到用户项目）| \`\${SKILL_HOME}/templates/<NN>-<name>.md.tmpl\` |
-| AI Prompt（单点真源）| \`\${SKILL_HOME}/ai-prompts/<NN>-<name>.md\` |
+| 模板（仅供 review，不复制到用户项目）| \`\${SKILL_HOME}/assets/<NN>-<name>.md.tmpl\` |
+| AI Prompt（单点真源）| \`\${SKILL_HOME}/references/prompts/<NN>-<name>.md\` |
 | 方法论 | \`\${SKILL_HOME}/references/methodology.md\` |
 | 资产类型 | \`\${SKILL_HOME}/references/asset-types.md\` |
 | 反模式 | \`\${SKILL_HOME}/references/anti-patterns.md\` |
 | 校验脚本 | \`\${SKILL_HOME}/scripts/check-all.sh\` |
 
-> **⚠️ v2.2 重要变更**：\`asset-docs/templates/\`、\`asset-docs/ai-prompts/\`、\`asset-docs/scripts/\`、\`asset-docs/references/\` 4 个目录**不再复制到用户项目**。所有这些内容都在 \${SKILL_HOME}（约 \`~/.claude/skills/study-code-output-standard/\`）下。
+> **⚠️ v2.2 重要变更**：\`asset-docs/assets/\`、\`asset-docs/references/prompts/\`、\`asset-docs/scripts/\`、\`asset-docs/references/\` 4 个目录**不再复制到用户项目**。所有这些内容都在 \${SKILL_HOME}（约 \`~/.claude/skills/study-code-output-standard/\`）下。
 
 ## 反模式禁止（来自 11-技术债 + 13-反模式扫描报告）
 

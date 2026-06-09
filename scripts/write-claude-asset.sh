@@ -210,8 +210,8 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
   echo
   echo "## 6. 模板与 Prompt（v2.2 起留在 SKILL_HOME）"
   echo
-  echo "- 模板：\`\${SKILL_HOME}/templates/\`（13 份 .md.tmpl，含 v2.2 新增 13-反模式扫描报告）"
-  echo "- AI Prompt：\`\${SKILL_HOME}/ai-prompts/\`（13 份 .md，单点真源）"
+  echo "- 模板：\`\${SKILL_HOME}/assets/\`（13 份 .md.tmpl，含 v2.2 新增 13-反模式扫描报告）"
+  echo "- AI Prompt：\`\${SKILL_HOME}/references/prompts/\`（13 份 .md，单点真源）"
   echo "- 反模式：\`\${SKILL_HOME}/references/anti-patterns.md\`（24 标签全集）"
   echo
   echo "---"
