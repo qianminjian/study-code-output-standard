@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
-# check-meta.sh — 校验每篇资产元信息头 7 字段
+# check-meta.sh — 校验每篇资产元信息头 7 字段 + last_updated 时效
 # 用法：bash scripts/check-meta.sh
+# v2.2 变更：code_version 改为可选（非 git 项目可留空 / 写 <unversioned>）
+#         新增 last_updated > 30 天告警
 set -e
 
-REQUIRED=("id" "version" "last_updated" "data_source" "code_version" "owner" "ai_consumable")
+REQUIRED=("id" "version" "last_updated" "data_source" "owner" "ai_consumable")
+OPTIONAL=("code_version" "severity_taxonomy")
 DOCS_DIR="${DOCS_DIR:-asset-docs}"
+STALE_DAYS="${STALE_DAYS:-30}"
 
 if [ ! -d "$DOCS_DIR" ]; then
   echo "ERROR: $DOCS_DIR 目录不存在"
@@ -12,6 +16,7 @@ if [ ! -d "$DOCS_DIR" ]; then
 fi
 
 errors=0
+stale_warnings=0
 for f in "$DOCS_DIR"/*.md; do
   # 跳过非资产文件（README、CHANGELOG 等）
   basename="$(basename "$f")"
@@ -30,6 +35,17 @@ for f in "$DOCS_DIR"/*.md; do
       errors=$((errors+1))
     fi
   done
+
+  # 校验 last_updated 距今不超过 STALE_DAYS 天（软告警，不阻断）
+  last_updated="$(grep -E '"last_updated":' "$f" | head -1 | sed -E 's/.*"last_updated":[[:space:]]*"([^"]+)".*/\1/')"
+  if [ -n "$last_updated" ] && [ "$last_updated" != "<YYYY-MM-DD>" ]; then
+    # 用 Python 计算天数差（macOS 友好，无需 GNU date）
+    days_old="$(python3 -c "from datetime import date; y,m,d=[int(x) for x in '$last_updated'.split('-')]; print((date.today() - date(y,m,d)).days)" 2>/dev/null || echo "")"
+    if [ -n "$days_old" ] && [ "$days_old" -gt "$STALE_DAYS" ] 2>/dev/null; then
+      echo "STALE: $f last_updated=$last_updated 距今 $days_old 天（阈值 $STALE_DAYS 天）"
+      stale_warnings=$((stale_warnings+1))
+    fi
+  fi
 done
 
 if [ "$errors" -gt 0 ]; then
@@ -37,4 +53,8 @@ if [ "$errors" -gt 0 ]; then
   exit 1
 fi
 
-echo "==> OK: 所有资产元信息头完整"
+if [ "$stale_warnings" -gt 0 ]; then
+  echo "==> OK（所有元信息头完整）；⚠ $stale_warnings 篇资产已过期，需 review"
+else
+  echo "==> OK: 所有资产元信息头完整且新鲜"
+fi
