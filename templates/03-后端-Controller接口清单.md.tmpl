@@ -16,31 +16,23 @@
 # 03 · 后端 Controller 接口清单
 
 > 共 N 个 Controller。所有路径前缀 `<prefix>`。
-> v2.3 改进：§1-B 摘要表必填（满足 check-consistency 端点对齐），§2 详表可按 Controller 拆文件（如 `03-端点详情-<Controller>.md`）。
+> v2.4 改进：**§1 摘要表合并原 §1 概览 + §1-B 摘要**，单一数据源，避免双处数字不一致。
 
-## 1. 概览
+## 1. 摘要表（v2.4 必填 · check-consistency 对账 · 单一数据源）
 
-| Controller | 前缀 | Api tags | 端点数 | 公开端点 |
-|---|---|---|---|---|
-| <Controller> | <prefix> | <tags> | <N> | <N> |
+> 本表是 check-consistency.sh 校验的**唯一**数据源——**端点数 / 公开端点数 列数字必须与代码 grep 数严格对齐**。
+> 严禁再在别处维护第二份"端点总数"（v2.3 的 §1-B 数字与 §1 概览不一致导致 mismatch，本版本已合并）。
+
+| Controller | 前缀 | Api tags | 端点数 | 公开端点数 | 鉴权策略 | 全局前缀 | Swagger 启用 |
+|---|---|---|:-:|:-:|---|---|---|
+| <Controller> | <prefix> | <tags> | <N> | <N> | @PreAuthorize / permitAll / @CrossOrigin | <无/api/v1> | <是/否> |
+
+> **check-consistency 对账命令**（自动跑）：
+> - 端点总数 = 表格"端点数"列之和 = `grep -rE "@(Get\|Post\|Put\|Delete)Mapping" <controller-dir> \| wc -l`（**必须相等**）
+> - Controller 总数 = 表格行数 = `find <controller-dir> -name "*Controller.java" \| wc -l`
+> - 公开端点总数 = 表格"公开端点数"列之和 ≈ `grep -rl "@CrossOrigin" <controller-dir> \| wc -l`（粗略，公开端点不一定都在 @CrossOrigin 注解上）
 
 > 标注 ⚠️ 的是 `@Api(tags=...)` 错误标签。
-
-## 1-B. 端点摘要（v2.3 新增 · 必填 · check-consistency 对账）
-
-> 本表是 check-consistency.sh 校验的"标准答案"——**必须与代码 grep 数对齐**。
-> §2 详表可分文件，但**本摘要表所有数字必须精确**。
-
-| 项目 | 数量 | 验证命令 | 状态 |
-|---|:-:|---|:-:|
-| Controller 总数 | <N> | `find <controller-dir> -name "*Controller.java" \| wc -l` | ⬜ |
-| **端点总数**（方法级）| <N> | `grep -rE "@(Get\|Post\|Put\|Delete)Mapping" <controller-dir> \| wc -l` | ⬜ |
-| 公开端点数 | <N> | `grep -rl "@CrossOrigin" <controller-dir> \| wc -l`（粗略）| ⬜ |
-| 鉴权端点数 | <N> | `grep -rl "@PreAuthorize" <controller-dir> \| wc -l`（粗略）| ⬜ |
-| 全局前缀 | <无/api/v1> | `grep -r "@RequestMapping(\"/" <controller-dir> \| head -1` | ⬜ |
-| Swagger 启用 | <是/否> | `grep -r "@Api\|springfox\|springdoc" <controller-dir> \| head -1` | ⬜ |
-
-> 校验不通过示例：expected=66 documented=19 → 03 需补充 47 个端点（v2.2 之前问题，v2.3 起需对齐）。
 
 ## 2. 详细接口清单
 
@@ -72,5 +64,6 @@
 
 | 字段 | 值 |
 |---|---|
-| 验证命令 | `grep -rE "@(Get\|Post\|Put\|Delete)Mapping" <controller-dir> \| wc -l` |
+| 端点验证 | `grep -rE "@(Get\|Post\|Put\|Delete)Mapping" <controller-dir> \| wc -l` |
 | Swagger 校对 | 访问 `<swagger-url>` |
+| check-consistency 对账 | **§1 摘要表"端点数"列之和** = 实际 grep 数（v2.4 唯一数据源）|

@@ -30,22 +30,30 @@ if [ ! -d "$SRC_DIR" ]; then
 fi
 
 # 1. 端点数
+# v2.4 本轮 #3：单一数据源——读 §1 摘要表"端点数"列之和（不再读 §1-B）
 expected=$(grep -rE "@(Get|Post|Put|Delete)Mapping" "$SRC_DIR" 2>/dev/null | wc -l | tr -d ' ')
-# v2.3 #8：从 03 模板 §1-B 摘要表读"端点总数"行
-documented=$(grep -A 10 "## 1-B" "$DOCS_DIR"/03-*.md 2>/dev/null | grep -E "端点总数.*\|" | head -1 | grep -oE '[0-9]+' | head -1 || echo 0)
+# 从 §1 摘要表的"| <Ctrl> | <prefix> | <tags> | <N> |"行提取"端点数"列（第 4 列）
+documented=$(awk -F'|' '/^## 1\./,/^## 2\./' "$DOCS_DIR"/03-*.md 2>/dev/null \
+  | grep -E '^\| *<[^>]+>' \
+  | head -1 >/dev/null && \
+  awk -F'|' '/^## 1\./,/^## 2\./' "$DOCS_DIR"/03-*.md 2>/dev/null \
+    | grep -E '^\| *[A-Za-z][A-Za-z]+ *\|' \
+    | awk -F'|' '{gsub(/ /,"",$5); sum+=$5} END{print sum+0}')
 [ -n "$documented" ] || documented=0
 if [ "$expected" -gt 0 ] && [ "$documented" -gt 0 ]; then
   if [ "$expected" -ne "$documented" ]; then
-    echo "MISMATCH: 端点数 expected=$expected documented=$documented"
-    echo "  03-Controller 文档 §1-B 摘要表需对齐 ($((expected - documented)) 差距)"
+    echo "MISMATCH: 端点数 expected=$expected documented=$documented (v2.4 摘要表 §1)"
+    echo "  03-Controller 文档 §1 摘要表"端点数"列之和需对齐 ($((expected - documented)) 差距)"
     exit 1
   fi
-  echo "OK: 端点数 $expected == 摘要表 $documented"
+  echo "OK: 端点数 $expected == 摘要表 §1 $documented"
 fi
 
 # 2. Controller 数
 expected=$(find "$SRC_DIR" -name "*Controller.java" 2>/dev/null | wc -l | tr -d ' ')
-documented=$(awk '/^### 2\./{c++} END{print c}' "$DOCS_DIR"/03-*.md 2>/dev/null || echo 0)
+# v2.4：从 §1 摘要表 Controller 列（第 1 列）行数（去掉 <N> 占位行）
+documented=$(awk -F'|' '/^## 1\./,/^## 2\./' "$DOCS_DIR"/03-*.md 2>/dev/null \
+  | grep -cE '^\| *<[A-Z][a-zA-Z]+ *\|')
 if [ -n "$expected" ] && [ -n "$documented" ]; then
   if [ "$expected" -ne "$documented" ]; then
     echo "MISMATCH: Controller 数 expected=$expected documented=$documented"

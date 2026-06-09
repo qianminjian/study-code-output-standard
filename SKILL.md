@@ -37,6 +37,23 @@ description: |
 
 > **为什么把 `/ttt` 等加进触发词**：用户的实际入口往往是 `/ttt <动作>` 或 `/ts <动作>`，而不是直接 `/study-code-output-standard`。把深度思考类 slash-command 列为入口，能让本 skill 真正被触发。
 
+## ai-prompts/ 实际使用（v2.4 重新定位 · 本轮 #6）
+
+> v2.4 起**明确定位**，避免与 templates/ @prompt 引用块重复：
+
+| 资源 | 谁读 | 用途 |
+|---|---|---|
+| **`${SKILL_HOME}/templates/<NN>-*.md.tmpl`** | **AI 实际读取** | 含 `@prompt:` 引用块 + frontmatter + 占位结构 → AI 严格按模板写资产 |
+| **`${SKILL_HOME}/ai-prompts/<NN>-*.md`** | **人类维护者 review** | AI 写资产时的"灵感库 / 完整 prompt 参考"，人类维护时 audit 写出质量 |
+| **`${SKILL_HOME}/methodology/04-反向阅读工作流.md`** | 人类 + AI 共同 | 6→7 步法详细方法论 |
+| **`${SKILL_HOME}/references/anti-patterns.md`** | 人类 + AI 共同 | 24 个反模式标签扫法 + 老朋友 5 案例 |
+
+> **⚠️ 重要工作流**（v2.4 本轮 #6 修正）：
+> - ❌ **不要**让 AI 直接读 `ai-prompts/` 目录生成资产——本轮测试发现实际**没用上**（设计意图 vs 实际使用脱节）
+> - ✅ **应该**让 AI 读 `templates/<NN>-*.md.tmpl`（含 @prompt 引用块 + 完整骨架）
+> - ✅ `ai-prompts/` 保留作为人类维护者的"prompt 灵感库"——review AI 写出时对照
+> - 单点真源原则：模板维护时**同步刷** `ai-prompts/<NN>-*.md`（注释提示）
+
 ## Token 预算（v2.4 新增 · 本轮 #2）
 
 完整跑 13 篇资产的**预估 token 量级**（基于 wxcbrc 1.5 万行实测）：
