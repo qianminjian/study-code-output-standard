@@ -7,8 +7,8 @@
 项目 <name>，ORM 框架 <MyBatis/Hibernate/...>。本任务生成"数据访问操作清单"。
 
 【任务】
-生成 docs/04-后端-Mapper操作清单.md。
-按 docs/03-文档模板与质量标准.md §04 模板。
+生成 asset-docs/04-后端-Mapper操作清单.md。
+按 methodology/03-文档模板与质量标准.md §04 模板。
 
 【输入】
 - Mapper 接口目录：<path>

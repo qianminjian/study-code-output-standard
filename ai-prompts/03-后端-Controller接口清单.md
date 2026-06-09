@@ -7,8 +7,8 @@
 项目 <name>，后端 <栈>。本任务生成"API 接口清单"资产。
 
 【任务】
-生成 docs/03-后端-Controller接口清单.md。
-严格按 docs/03-文档模板与质量标准.md §03 模板。
+生成 asset-docs/03-后端-Controller接口清单.md。
+严格按 methodology/03-文档模板与质量标准.md §03 模板。
 
 【输入】
 - Controller 目录：<path>

@@ -6,7 +6,7 @@
 set -e
 
 SRC_DIR="${SRC_DIR:-src/main/java/com/example}"
-DOCS_DIR="${DOCS_DIR:-docs}"
+DOCS_DIR="${DOCS_DIR:-asset-docs}"
 
 if [ ! -d "$SRC_DIR" ]; then
   echo "WARN: $SRC_DIR 不存在，跳过一致性检查"

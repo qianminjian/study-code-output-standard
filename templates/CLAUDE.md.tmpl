@@ -1,27 +1,27 @@
 # <PROJECT_NAME> — AI 引导
 
-> 本项目代码资产位于 `docs/`，请按以下顺序消费。
+> 本项目代码资产位于 `asset-docs/`，请按以下顺序消费。
 
 ## 必读资产（按角色）
 
 ### 接手新人
-1. [00-文档索引](docs/00-文档索引.md)
-2. [01-系统总览](docs/01-系统总览.md)
-3. [02-数据模型与表结构](docs/02-数据模型与表结构.md)
-4. [03-后端-Controller接口清单](docs/03-后端-Controller接口清单.md)
-5. [07-前端-页面与组件清单](docs/07-前端-页面与组件清单.md)（如适用）
+1. [00-文档索引](asset-docs/00-文档索引.md)
+2. [01-系统总览](asset-docs/01-系统总览.md)
+3. [02-数据模型与表结构](asset-docs/02-数据模型与表结构.md)
+4. [03-后端-Controller接口清单](asset-docs/03-后端-Controller接口清单.md)
+5. [07-前端-页面与组件清单](asset-docs/07-前端-页面与组件清单.md)（如适用）
 
 ### 写新功能
-- 数据模型：[02-数据模型](docs/02-数据模型与表结构.md)
-- API 风格：[03-Controller](docs/03-后端-Controller接口清单.md)
-- 业务逻辑：[05-服务与业务](docs/05-后端-服务与业务逻辑.md)
-- 前端模式：[07-页面](docs/07-前端-页面与组件清单.md) + [08-状态](docs/08-前端-状态管理与路由.md)
-- 业务流参考：[10-业务流图](docs/10-业务流图.md)
+- 数据模型：[02-数据模型](asset-docs/02-数据模型与表结构.md)
+- API 风格：[03-Controller](asset-docs/03-后端-Controller接口清单.md)
+- 业务逻辑：[05-服务与业务](asset-docs/05-后端-服务与业务逻辑.md)
+- 前端模式：[07-页面](asset-docs/07-前端-页面与组件清单.md) + [08-状态](asset-docs/08-前端-状态管理与路由.md)
+- 业务流参考：[10-业务流图](asset-docs/10-业务流图.md)
 
 ### 修 Bug
-- 已知 P0/P1：[11-技术债](docs/11-技术债与遗留项.md)
-- 修复计划：[12-修复建议](docs/12-修复建议与优先级.md)
-- 业务流参考：[10-业务流图](docs/10-业务流图.md)
+- 已知 P0/P1：[11-技术债](asset-docs/11-技术债与遗留项.md)
+- 修复计划：[12-修复建议](asset-docs/12-修复建议与优先级.md)
+- 业务流参考：[10-业务流图](asset-docs/10-业务流图.md)
 
 ### AI 编程（喂入资产）
 - **最小集（3 篇）**：01 + 02 + 03 — 适合简单 CRUD
@@ -61,28 +61,28 @@
 ```bash
 # 在 Claude Code 中：
 # 1. 打开本项目
-# 2. 粘贴 docs/ai-prompts/00-全流程启动.md 内容
+# 2. 粘贴 asset-docs/ai-prompts/00-全流程启动.md 内容
 # 3. AI 自动按 6 步法生成 12 篇资产
 ```
 
 ### 校验资产
 ```bash
-bash docs/scripts/validate-all.sh
+bash asset-docs/scripts/validate-all.sh
 ```
 
 ### 修改代码 + 同步资产
 ```bash
 # 1. 改代码
-# 2. 改 docs/ 对应章节
-# 3. 跑 docs/scripts/validate-all.sh
-# 4. 在 docs/CHANGELOG.md 加一行
+# 2. 改 asset-docs/ 对应章节
+# 3. 跑 asset-docs/scripts/validate-all.sh
+# 4. 在 asset-docs/CHANGELOG.md 加一行
 # 5. 提交
 ```
 
 ### 喂 AI 写代码
 ```bash
 # Claude Code 对话框：
-请按 docs/01-系统总览.md、docs/02-数据模型与表结构.md、docs/03-后端-Controller接口清单.md 的规范，
+请按 asset-docs/01-系统总览.md、asset-docs/02-数据模型与表结构.md、asset-docs/03-后端-Controller接口清单.md 的规范，
 实现一个 XXX 接口。
 ```
 

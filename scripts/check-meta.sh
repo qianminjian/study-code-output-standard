@@ -4,7 +4,7 @@
 set -e
 
 REQUIRED=("id" "version" "last_updated" "data_source" "code_version" "owner" "ai_consumable")
-DOCS_DIR="${DOCS_DIR:-docs}"
+DOCS_DIR="${DOCS_DIR:-asset-docs}"
 
 if [ ! -d "$DOCS_DIR" ]; then
   echo "ERROR: $DOCS_DIR 目录不存在"

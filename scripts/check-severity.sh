@@ -5,7 +5,7 @@
 # 可通过 SEVERITY_INCLUDE_DIRS 环境变量覆盖
 set -e
 
-DOCS_DIR="${DOCS_DIR:-docs}"
+DOCS_DIR="${DOCS_DIR:-asset-docs}"
 
 # 修复 P2-03：默认排除 templates/ 和 ai-prompts/（教学副本会污染统计）
 INCLUDE_ARGS=()
