@@ -2,21 +2,19 @@
 # no-leak-path.test.sh — 扫描本仓库，确保无 /Users/minjianq 等真实绝对路径泄露
 # 用法：bash tests/no-leak-path.test.sh
 #
-# 背景：REVIEW.md P0-02 发现 docs/examples/wxcbrc-case.md 曾泄露 /Users/minjianq/... 真实路径
+# 背景：docs/examples/wxcbrc-case.md 曾出现 /Users/minjianq/... 真实路径，已脱敏为 <保密路径>
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# 1. 扫描全仓（除 .git/、tests/、审计报告、历史 prompt）无 /Users/minjianq 路径
-# 排除以下文件（这些是审计/历史/原始 prompt，路径出现是合理的）：
-#   - REVIEW.md（审计报告本身）
+# 1. 扫描全仓（除 .git/、tests/、原始 prompt）无 /Users/minjianq 路径
+# 排除以下文件（原始 prompt 出现绝对路径是合理的）：
 #   - 输出代码资产的提示词.md（项目原始 prompt）
 echo "[T1] 扫描 /Users/minjianq 真实路径泄露"
 LEAKED=$(grep -rn "/Users/minjianq" "$REPO_ROOT" \
   --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" \
   --include="*.md" --include="*.sh" --include="*.ps1" \
-  --exclude="REVIEW.md" \
   --exclude="输出代码资产的提示词.md" \
   2>/dev/null || true)
 
@@ -28,11 +26,9 @@ fi
 echo "  ✓ 无 /Users/minjianq 泄露"
 
 # 2. 扫描 /Users/qian 或其他真实用户名（兼容中文环境）
-# 排除审计报告
 echo "[T2] 扫描其他可能真实路径"
 LEAKED2=$(grep -rnE "/Users/[a-z]+/(Documents|Downloads|Desktop|projects)/" "$REPO_ROOT" \
   --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" \
-  --exclude="REVIEW.md" \
   --exclude="输出代码资产的提示词.md" \
   --include="*.md" --include="*.sh" --include="*.ps1" \
   2>/dev/null | grep -vE "/Users/[a-z]+/\$|<保密>|<保密路径>|placeholder|example" || true)
@@ -57,11 +53,9 @@ fi
 echo "  ✓ wxcbrc-case.md 已脱敏"
 
 # 4. 扫描 C:\Users\... Windows 真实路径
-# 排除审计报告
 echo "[T4] 扫描 Windows 真实路径泄露"
 LEAKED3=$(grep -rnE "C:\\\\Users\\\\[a-zA-Z]+" "$REPO_ROOT" \
   --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" \
-  --exclude="REVIEW.md" \
   --exclude="输出代码资产的提示词.md" \
   --include="*.md" --include="*.sh" --include="*.ps1" \
   2>/dev/null || true)

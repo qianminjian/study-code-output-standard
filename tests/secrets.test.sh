@@ -12,8 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # 1. 扫常见密钥模式（YAML / 等号 / 引号变种）
-# 排除审计/反例/历史报告文档（这些文档的"密钥"是教学/历史快照，不应算作泄露）：
-#   - REVIEW.md（审计报告本身含历史路径/示例）
+# 排除反例/原始 prompt 文档（这些文档的"密钥"是教学示例或历史输入，不应算作泄露）：
 #   - 输出代码资产的提示词.md（项目原始 prompt）
 #   - skill/references/anti-patterns.md（反例展示）
 #   - docs/07-典型案例与反模式.md（反例展示）
@@ -23,7 +22,6 @@ HITS=$(grep -rnE "(secret|password|passwd|token|apikey|api_key|access_key|privat
   "$REPO_ROOT" \
   --include="*.md" --include="*.sh" --include="*.ps1" --include="*.yml" --include="*.yaml" --include="*.properties" \
   --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" \
-  --exclude="REVIEW.md" \
   --exclude="输出代码资产的提示词.md" \
   2>/dev/null || true)
 
