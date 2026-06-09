@@ -62,11 +62,34 @@
 
 每仓独立 12 篇 + 13-跨服务索引 + 12-跨服务治理。
 
-### 老旧系统（无构建工具）
+### 老旧系统（无构建工具 · v2.4 扩写 · 本轮 #5）
 
-- 04 改为 "04-数据访问与存储"
-- 06 改为 "06-安全审计"
-- 08 改为 "08-状态与脚本"
+> **适用场景**：jQuery 1.x / 无 DDL / 无 Swagger / 无 git / 无 README / 上古前后端分离站
+> **典型项目**：wxcbrc（jQuery + 无 DDL + 无 Swagger + 无 git + 无 README）
+
+**降级工作流**（5 步走完）：
+
+| 资产 | 必做降级 |
+|---|---|
+| **02 数据模型** | **必启用 §2-B 推断模式**：无 DDL 时所有表加 ⚠️ 标记 + 元信息表注明 "DDL 来源：无（推断）" |
+| **03 Controller** | 取消 Swagger 校对，**改用 grep 双向对账**（Step 4 备选方案 1）；摘要表"全局前缀"列标"无/不统一" |
+| **04 Mapper** | 强制标 "XML 数 = find 数 ±1（含 mybatis-config.xml）" |
+| **05 服务** | 重点写**核心业务流 ASCII 图**（10 必填 6 核心流）|
+| **06 安全** | **必加 11 项 OWASP 清单**（无现代框架保护时手动审）；高亮 4 个 P0（@sqlinjection / @cors-wildcard / @actuator-exposure / @wrong-token-hdr）|
+| **09 静态** | jQuery 检测：global.js baseUrl 硬编码 / `$.html()` XSS 风险 |
+| **code_version** | 默认 `<unversioned>`（项目非 git 仓）|
+
+**额外动作**：
+- ⚠️ Step 1 勘探发现无 git 时，**主动** `git init` + 首次 commit（保留初始快照），避免后续 `git log` 缺失
+- ⚠️ 03 §1 摘要表"Swagger 启用"列**必填"否"**，让 v2.4 check-consistency 知道无 Swagger
+- ⚠️ 10-业务流图每流末加"推断：未人工 Read 全文确认（owner: <name>）"标签，等人类 review 后改"已确认"
+
+**跳过项**：
+- ❌ 跳过 Swagger 校对（无 UI）
+- ❌ 跳过全局前缀统一（多个 Controller 各自定义）
+- ❌ 跳过 actuator 暴露检测（用 Spring Security 默认）
+
+---
 
 ---
 

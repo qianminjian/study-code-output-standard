@@ -54,6 +54,52 @@ description: |
 > - ✅ `ai-prompts/` 保留作为人类维护者的"prompt 灵感库"——review AI 写出时对照
 > - 单点真源原则：模板维护时**同步刷** `ai-prompts/<NN>-*.md`（注释提示）
 
+## 老系统快速通道（v2.4 新增 · 本轮 #5）
+
+> 适用：jQuery 1.x / 无 DDL / 无 Swagger / 无 git / 无 README / 上古前后端分离站（如 wxcbrc）
+
+5 步走完：
+
+1. **Step 1 勘探必做**：`git init` + 首次 commit（无 git 时主动初始化）
+2. **02 必启用 §2-B 推断模式**——所有表加 ⚠️，元信息标"DDL 来源：无（推断）"
+3. **03 摘要表 "Swagger 启用"列填"否"** + 取消 Swagger 校对（Step 4 用 grep 双向对账）
+4. **06 必加 11 项 OWASP 清单**——高亮 4 个 P0（@sqlinjection / @cors-wildcard / @actuator-exposure / @wrong-token-hdr）
+5. **09 静态 + jQuery 检测**：global.js baseUrl 硬编码 / `$.html()` XSS 风险
+
+> 详细降级矩阵见 `references/asset-types.md` "老旧系统"分支
+
+## 写路径验证（v2.4 新增 · 本轮 #7）
+
+> ⚠️ **每篇资产写完立即 grep 验证**（确保写对位置）——本次完整跑 13 篇时发现 cat heredoc 写 .md 路径错会 silent 写错位置
+
+**必跑命令**（每篇写完 5 秒内）：
+
+```bash
+# 验证文件存在 + @meta 块正确
+head -3 asset-docs/02-数据模型与表结构.md | grep -E "@meta|id"
+# 期望输出: <!-- @meta { "id": "02-数据模型与表结构", ... -->
+
+# 验证文件数（应 13 份资产 + CHANGELOG + README + CLAUDE.md.tmpl = 16 文件）
+ls asset-docs/ | wc -l   # 期望: 16
+
+# 验证 frontmatter id 与文件名一致
+for f in asset-docs/[0-9][0-9]-*.md; do
+  basename "$f" .md
+  grep "\"id\":" "$f" | head -1
+done
+# 期望: 每行 basename 与 id 的中文名一致
+```
+
+**典型症状（说明写错位置）**：
+- `asset-docs/` 下文件数 < 13 → 写漏了
+- frontmatter `id` 与文件名不一致 → 写错模板
+- @meta 块缺失 → Write 工具被截断（**大文件风险**）
+- 文件出现在 `~/.claude/skills/study-code-output-standard/` 而非用户项目 → 用了 `${SKILL_HOME}` 相对路径
+
+**Skill 自身保护**（v2.4 本轮 #1）：
+- init 脚本写 `.asset-docs.lock` 文件锁——重复 init 会被拦截
+- 删除 lock 或加 `--force` 强制覆盖
+
 ## Token 预算（v2.4 新增 · 本轮 #2）
 
 完整跑 13 篇资产的**预估 token 量级**（基于 wxcbrc 1.5 万行实测）：
