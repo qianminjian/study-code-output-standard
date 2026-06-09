@@ -58,7 +58,7 @@ safe_grep_count() {
 TMPDIR_STATUS="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR_STATUS"' EXIT
 
-for n in 00 01 02 03 04 05 06 07 08 09 10 11 12; do
+for n in 00 01 02 03 04 05 06 07 08 09 10 11 12 13; do
   STATUS_FILE="$TMPDIR_STATUS/${n}_status"
   NAME_FILE="$TMPDIR_STATUS/${n}_name"
 
@@ -101,17 +101,17 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
 {
   echo "# $PROJECT_NAME — 资产详情"
   echo
-  echo "> **按需加载**：本文件是 12 篇资产的\"详细地图\"。"
+  echo "> **按需加载**：本文件是 13 篇资产的\"详细地图\"（v2.2 起加 13-反模式扫描报告）。"
   echo "> 配合 \`CLAUDE.md\`（轻量索引）使用。"
   echo "> 生成时间：$(date +%Y-%m-%d)"
   echo
   echo "---"
   echo
-  echo "## 1. 资产清单（12 篇）"
+  echo "## 1. 资产清单（13 篇）"
   echo
   echo "| 编号 | 资产 | 状态 | 文件 |"
   echo "|:-:|---|:-:|---|"
-  for n in 00 01 02 03 04 05 06 07 08 09 10 11 12; do
+  for n in 00 01 02 03 04 05 06 07 08 09 10 11 12 13; do
     s=$(read_status "$n")
     case "$n" in
       00) name="文档索引";;
@@ -127,6 +127,7 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
       10) name="业务流图（端到端）";;
       11) name="技术债与遗留项";;
       12) name="修复建议与优先级";;
+      13) name="反模式扫描报告（v2.2 新增）";;
     esac
     # 缺失资产：状态显示，但文件列不显示链接（修 P0-03 死链）
     if [ "$s" = "缺失" ]; then
@@ -155,6 +156,7 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
   echo "| 10 ↔ 02-09 | 业务流 ↔ 各层资产 |"
   echo "| 11 ↔ 02-10 | 技术债 ↔ 各层资产 |"
   echo "| 12 ↔ 11 | 修复建议 ↔ 技术债 |"
+  echo "| 13 ↔ 11 | 反模式扫描 ↔ 技术债（13 是 11 的扫描数据源）|"
   echo
   echo "---"
   echo
@@ -164,27 +166,28 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
   echo "|---|---|"
   echo "| 简单 CRUD | \`01\` + \`02\` + \`03\`（最小集） |"
   echo "| 重构 | + \`05\` + \`11\`（推荐集） |"
-  echo "| 修 P0 | + \`11\` + \`12\` |"
-  echo "| 完整 | 12 篇（可承担新功能/重构/修 Bug） |"
+  echo "| 修 P0 | + \`11\` + \`12\` + \`13\`（含反模式分布） |"
+  echo "| 完整 | 13 篇（可承担新功能/重构/修 Bug） |"
   echo
   echo "---"
   echo
-  echo "## 4. 校验"
+  echo "## 4. 校验（v2.2 起 scripts/ 留在 SKILL_HOME）"
   echo
   echo '```bash'
-  echo "bash asset-docs/scripts/validate-all.sh"
+  echo "bash \${SKILL_HOME}/scripts/check-all.sh"
+  echo "# 向后兼容："
+  echo "bash \${SKILL_HOME}/scripts/validate-all.sh"
   echo '```'
   echo
-  echo "包含 5 类校验："
-  echo "- \`check-meta.sh\` — 元信息头 7 字段"
-  echo "- \`check-severity.sh\` — 严重度 P0-P3"
-  echo "- \`check-consistency.sh\` — 资产-代码一致性"
-  echo "- \`scan-antipatterns.sh\` — 反模式扫描"
-  echo "- \`validate-all.sh\` — 一键跑全部"
+  echo "包含 4 类校验："
+  echo "- \`check-meta.sh\` — 元信息头 6 必填 + 2 可选 + 30 天 last_updated 告警（v2.2 新增）"
+  echo "- \`check-severity.sh\` — 严重度 P0-P3（P0>10 自动告警）"
+  echo "- \`check-consistency.sh\` — 资产-代码一致性（端点 / Controller / Mapper 数对齐）"
+  echo "- \`scan-antipatterns.sh\` — 反模式扫描（v2.3 满覆盖 24/24 标签）"
   echo
   echo "---"
   echo
-  echo "## 5. CI 接入"
+  echo "## 5. CI 接入（v2.2 起 scripts/ 路径用 \${SKILL_HOME}）"
   echo
   echo '```yaml'
   echo "# .github/workflows/docs-validate.yml"
@@ -200,15 +203,16 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
   echo "    steps:"
   echo "      - uses: actions/checkout@v4"
   echo "      - name: Run all checks"
-  echo "        run: bash asset-docs/scripts/validate-all.sh"
+  echo "        run: bash \$SKILL_HOME/scripts/check-all.sh"
   echo '```'
   echo
   echo "---"
   echo
-  echo "## 6. 模板与 Prompt"
+  echo "## 6. 模板与 Prompt（v2.2 起留在 SKILL_HOME）"
   echo
-  echo "- 模板：\`asset-docs/templates/\`（12 份 .md.tmpl）"
-  echo "- AI Prompt：\`asset-docs/ai-prompts/\`（12 份 .md）"
+  echo "- 模板：\`\${SKILL_HOME}/templates/\`（13 份 .md.tmpl，含 v2.2 新增 13-反模式扫描报告）"
+  echo "- AI Prompt：\`\${SKILL_HOME}/ai-prompts/\`（13 份 .md，单点真源）"
+  echo "- 反模式：\`\${SKILL_HOME}/references/anti-patterns.md\`（24 标签全集）"
   echo
   echo "---"
   echo

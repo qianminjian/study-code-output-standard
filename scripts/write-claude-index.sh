@@ -3,6 +3,10 @@
 # 用法：bash write-claude-index.sh [target-dir]
 #
 # 策略：CLAUDE.md ≤ 80 行，标注"按需加载 CLAUDE-ASSET.md"
+#
+# v2.3 修复（修 TEST-ISSUES #1 #2）：
+# 1. 引用路径全改 ${SKILL_HOME}（v2.2 起 scripts/ templates/ ai-prompts/ references/ 全部在 SKILL_HOME）
+# 2. 加 13-反模式扫描报告到必读/AI 编程喂入列表
 
 set -e
 
@@ -41,8 +45,8 @@ cat > "$OUTPUT" <<EOF
 |---|---|
 | 接手新人 | \`asset-docs/00-文档索引.md\` → \`01-系统总览.md\` → \`02-数据模型与表结构.md\` |
 | 写新功能 | \`02-数据模型与表结构\` + \`03-后端-Controller接口清单\` + \`05-后端-服务与业务逻辑\` |
-| 修 Bug | \`11-技术债与遗留项\` + \`12-修复建议与优先级\` + \`10-业务流图\` |
-| AI 编程 | 喂 \`01+02+03\`（最小集）或 \`+05+11\`（推荐集） |
+| 修 Bug | \`11-技术债与遗留项\` + \`12-修复建议与优先级\` + \`13-反模式扫描报告\` + \`10-业务流图\` |
+| AI 编程 | 喂 \`01+02+03\`（最小集）或 \`+05+11\`（推荐集）或 \`+13\`（含反模式）|
 
 ## 项目约束
 
@@ -56,9 +60,12 @@ cat > "$OUTPUT" <<EOF
 /study-code-output-standard
 \`\`\`
 
-### 校验资产
+### 校验资产（v2.2 起 scripts/ 留在 SKILL_HOME）
 \`\`\`bash
-bash asset-docs/scripts/validate-all.sh
+# 推荐：v2.2 新名
+bash \${SKILL_HOME}/scripts/check-all.sh
+# 向后兼容：v2.0 老名（shim 自动转 check-all.sh）
+bash \${SKILL_HOME}/scripts/validate-all.sh
 \`\`\`
 
 ### 喂 AI 写代码
@@ -67,24 +74,29 @@ bash asset-docs/scripts/validate-all.sh
 的规范，实现 XXX 接口。
 \`\`\`
 
-## 按需加载
+## 按需加载（v2.2 路径 · scripts/ templates/ ai-prompts/ references/ 全部在 \${SKILL_HOME}）
 
 | 需要看 | 加载文件 |
 |---|---|
-| 12 篇资产详细清单 | \`CLAUDE-ASSET.md\` |
+| 13 篇资产详细清单 | \`CLAUDE-ASSET.md\` |
 | 单篇资产详情 | \`asset-docs/<NN>-<name>.md\` |
-| 模板 | \`asset-docs/templates/<NN>-<name>.md.tmpl\` |
-| AI Prompt | \`asset-docs/ai-prompts/<NN>-<name>.md\` |
-| 方法论 | \`asset-docs/references/methodology.md\` |
-| 反模式 | \`asset-docs/references/anti-patterns.md\` |
+| 模板（仅供 review，不复制到用户项目）| \`\${SKILL_HOME}/templates/<NN>-<name>.md.tmpl\` |
+| AI Prompt（单点真源）| \`\${SKILL_HOME}/ai-prompts/<NN>-<name>.md\` |
+| 方法论 | \`\${SKILL_HOME}/references/methodology.md\` |
+| 资产类型 | \`\${SKILL_HOME}/references/asset-types.md\` |
+| 反模式 | \`\${SKILL_HOME}/references/anti-patterns.md\` |
+| 校验脚本 | \`\${SKILL_HOME}/scripts/check-all.sh\` |
 
-## 反模式禁止（来自 11-技术债）
+> **⚠️ v2.2 重要变更**：\`asset-docs/templates/\`、\`asset-docs/ai-prompts/\`、\`asset-docs/scripts/\`、\`asset-docs/references/\` 4 个目录**不再复制到用户项目**。所有这些内容都在 \${SKILL_HOME}（约 \`~/.claude/skills/study-code-output-standard/\`）下。
+
+## 反模式禁止（来自 11-技术债 + 13-反模式扫描报告）
 
 - ❌ 硬编码密钥/密码
 - ❌ SQL 字符串拼接 \`\${}\`
 - ❌ CORS \`allowedOrigins("*")\`
 - ❌ 明文传输密码
 - ❌ 复制粘贴 perms
+- ❌ AOP 切点路径写错（永远不触发）
 
 ## 元信息
 
