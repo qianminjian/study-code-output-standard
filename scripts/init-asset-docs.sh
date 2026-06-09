@@ -3,8 +3,9 @@
 # 用法：bash init-asset-docs.sh [target-dir]
 #   target-dir 默认 ${PWD}
 #
-# 效果：创建 ${TARGET}/asset-docs/ 含 12 篇资产 + 12 模板 + 12 Prompt + 5 脚本 + 1 索引
-# 跨平台：Mac / Linux / Git Bash on Windows
+# v2.2 变更：不再复制 templates/ai-prompts/scripts/references 4 个目录（24+ 文件冗余污染用户项目）。
+#           这 4 个目录全部留在 skill 安装目录，模板/校验脚本由 SKILL_HOME 解析。
+#   效果：${TARGET}/asset-docs/ 含 12 篇资产占位 + 1 CHANGELOG + 1 README + 1 CLAUDE.md.tmpl
 
 set -e
 
@@ -65,8 +66,9 @@ if [ -d "$OUTPUT_DIR" ]; then
   fi
 fi
 
-# 4. 创建目录结构
-mkdir -p "$OUTPUT_DIR"/{templates,ai-prompts,references,scripts}
+# 4. 创建目录结构（v2.2：不再创建 templates/ai-prompts/scripts/references 4 个子目录）
+#    这些目录的内容全部留在 skill 安装目录（SKILL_HOME）
+mkdir -p "$OUTPUT_DIR"
 
 # 5. 复制 12 份资产占位（带 frontmatter）
 # 修复 P2-01：白名单方式（仅复制 00-12 编号资产，跳过其它）
@@ -82,40 +84,24 @@ for n in 00 01 02 03 04 05 06 07 08 09 10 11 12; do
   done
 done
 
-# 6. 复制 templates/ 副本
-echo "==> 复制 templates/"
-cp -R "$METHODOLOGY_DIR/templates/." "$OUTPUT_DIR/templates/"
-
-# 7. 复制 ai-prompts/ 副本
-echo "==> 复制 ai-prompts/"
-cp -R "$METHODOLOGY_DIR/ai-prompts/." "$OUTPUT_DIR/ai-prompts/"
-
-# 8. 复制校验脚本
-echo "==> 复制 scripts/"
-for s in check-meta.sh check-severity.sh check-consistency.sh scan-antipatterns.sh validate-all.sh; do
-  if [ -f "$METHODOLOGY_DIR/scripts/$s" ]; then
-    cp "$METHODOLOGY_DIR/scripts/$s" "$OUTPUT_DIR/scripts/$s"
-  fi
-done
-# 修复 P3-01：chmod 失败不吞错（set -e 已开启，失败会退出）
-chmod +x "$OUTPUT_DIR/scripts/"*.sh
-
-# 9. 复制 references/（方法论摘要）
-echo "==> 复制 references/"
-if [ -d "$METHODOLOGY_DIR/references" ]; then
-  cp -R "$METHODOLOGY_DIR/references/." "$OUTPUT_DIR/references/"
+# 6. 复制 CLAUDE.md.tmpl（#12 修复：附加资产单独 cp）
+echo "==> 复制 CLAUDE.md.tmpl"
+if [ -f "$METHODOLOGY_DIR/templates/CLAUDE.md.tmpl" ]; then
+  cp "$METHODOLOGY_DIR/templates/CLAUDE.md.tmpl" "$OUTPUT_DIR/CLAUDE.md.tmpl"
+  echo "  + CLAUDE.md.tmpl"
 fi
 
-# 10. 创建资产变更日志
+# 7. 创建资产变更日志
 cat > "$OUTPUT_DIR/CHANGELOG.md" <<EOF
 # Asset Docs Changelog
 
 ## [1.0.0] - $(date +%Y-%m-%d)
 ### 全部
-- 初版：12 篇资产 + 12 模板 + 12 Prompt + 5 脚本 + 3 references
+- 初版：12 篇资产 + 1 CHANGELOG + 1 README + 1 CLAUDE.md.tmpl
+- 模板 / Prompt / 脚本 / references 全部留在 skill 安装目录（SKILL_HOME）
 EOF
 
-# 11. 创建资产说明 README
+# 8. 创建资产说明 README
 cat > "$OUTPUT_DIR/README.md" <<EOF
 # Asset Docs — 反向阅读产出
 
@@ -141,16 +127,21 @@ asset-docs/
 ├── 11-技术债与遗留项.md
 ├── 12-修复建议与优先级.md
 ├── CHANGELOG.md
-├── templates/      ← 12 份可填充模板
-├── ai-prompts/     ← 12 份 AI Prompt
-├── references/     ← 方法论摘要
-└── scripts/        ← 5 个校验脚本
+├── CLAUDE.md.tmpl
+└── README.md (本文件)
 \`\`\`
+
+> **v2.2 起**：templates/、ai-prompts/、scripts/、references/ **不再复制** 到用户项目。
+> 模板/校验脚本/Prompt 全部留在 skill 安装目录（SKILL_HOME，约 ~/.claude/skills/study-code-output-standard/）。
+> 这样避免 24+ 文件冗余污染用户项目。
 
 ## 校验
 
 \`\`\`bash
-bash scripts/validate-all.sh
+# v2.2 起推荐：
+bash \$SKILL_HOME/scripts/check-all.sh
+# 老用户兼容：
+bash \$SKILL_HOME/scripts/validate-all.sh
 \`\`\`
 
 ## AI 编程：按需喂入
@@ -169,4 +160,4 @@ echo ""
 echo "下一步："
 echo "  1. 在 Claude Code 中调用 /study-code-output-standard 继续抽取"
 echo "  2. 或手动填充各 .md 文件"
-echo "  3. 跑 bash $OUTPUT_DIR/scripts/validate-all.sh 校验"
+echo "  3. 跑 bash \$SKILL_HOME/scripts/check-all.sh 校验"

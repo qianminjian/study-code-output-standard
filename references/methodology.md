@@ -249,6 +249,35 @@ jobs:
 
 > AOP 切面是最容易被遗忘的"半成品"——代码在，但永远不触发。
 
+### 11.1 闭环机制（v2.2 新增）
+
+为让"**改代码 = 改资产**"金句真正落地，本 skill 引入 **Step 7 · 资产回写**：
+
+| 触发 | 动作 | SLA |
+|---|---|---|
+| PR 改 Controller | 同步 03-Controller + 12 修复建议（如有影响） | PR 合并前 |
+| PR 改 Mapper | 同步 02-数据模型 + 04-Mapper | PR 合并前 |
+| PR 修 P0 | 11 标"已修复" + 12 标"已完成" | PR 合并前 |
+| 资产 `last_updated` > 30 天 | `check-meta.sh` 告警 | 不阻断，建议 owner 刷新 |
+| 代码 bump 大版本 | 12 篇 `version` 同步 bump + CHANGELOG | 发版前 |
+
+**配套 CI**：
+
+```yaml
+# .github/workflows/docs-validate.yml
+on:
+  pull_request:
+    paths: ['src/**', 'asset-docs/**']
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash $SKILL_HOME/scripts/check-all.sh
+```
+
+> 闭环失败 = 资产漂移 = 失去 AI 喂入价值。**第一次漂移出现就要抓**，不要等季度 review。
+
 ---
 
 ## 元信息
