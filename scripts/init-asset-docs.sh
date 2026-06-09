@@ -10,8 +10,11 @@
 set -e
 
 # 0. 参数解析
+# v2.4 TEST-ISSUES-#1：加 --force 跳过 lock
 TARGET="${1:-${PWD}}"
 TARGET="$(cd "$TARGET" 2>/dev/null && pwd || echo "$TARGET")"
+FORCE=false
+[ "${2:-}" = "--force" ] && FORCE=true
 
 # 1. 推断 skill 根目录（重构 v2.1：scripts/ 在仓库根下，仓库根即 skill 根）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
@@ -48,8 +51,17 @@ if [ ! -d "$TARGET" ]; then
   exit 1
 fi
 
-# 3. 检测已有
+# 3. 检测已有（v2.4：lockfile 保护）
+LOCK_FILE="$OUTPUT_DIR/.asset-docs.lock"
 if [ -d "$OUTPUT_DIR" ]; then
+  if [ -f "$LOCK_FILE" ] && [ "$FORCE" = "false" ]; then
+    echo "ERROR: $OUTPUT_DIR 已被 .asset-docs.lock 保护"
+    echo "  v2.4 起的资产保护机制，防止 init 覆盖已写好的资产"
+    echo "  解锁方法："
+    echo "    1. 删除 $LOCK_FILE（手动确认资产可丢弃）"
+    echo "    2. 或用 --force 参数强制覆盖：bash $0 $TARGET --force"
+    exit 1
+  fi
   echo "WARN: $OUTPUT_DIR 已存在"
   if [ -t 0 ]; then
     read -p "  是否覆盖？[y/N] " yn
@@ -70,9 +82,11 @@ fi
 #    这些目录的内容全部留在 skill 安装目录（SKILL_HOME）
 mkdir -p "$OUTPUT_DIR"
 
-# 5. 复制 12 份资产占位（带 frontmatter）
-# 修复 P2-01：白名单方式（仅复制 00-12 编号资产，跳过其它）
+# 5. 复制 13 份资产占位（带 frontmatter）
+# 修复 P2-01：白名单方式（仅复制 00-13 编号资产，跳过其它）
 # v2.3 TEST-ISSUES #9：循环加 13 号（反模式扫描报告）
+# v2.4 本轮 #1：init 完成时写 .asset-docs.lock 保护
+SKILL_VERSION="2.4"
 echo "==> 复制 13 份资产占位"
 for n in 00 01 02 03 04 05 06 07 08 09 10 11 12 13; do
   # 用通配符找 0N-*.md.tmpl
@@ -99,13 +113,25 @@ cat > "$OUTPUT_DIR/CHANGELOG.md" <<EOF
 
 > skill 版本：$(grep '^VERSION=' "$METHODOLOGY_DIR/install.sh" 2>/dev/null | head -1 | sed 's/VERSION="\(.*\)"/\1/')
 > 资产版本：1.0.0（asset version 与 skill version 解耦）
+> 保护锁：\`$LOCK_FILE\`（v2.4 新增）— 防止 init 误覆盖
 
 ## [1.0.0] - $(date +%Y-%m-%d)
 ### 全部
 - 初版：13 篇资产 + 1 CHANGELOG + 1 README + 1 CLAUDE.md.tmpl
 - 模板 / Prompt / 脚本 / references 全部留在 skill 安装目录（SKILL_HOME）
 - v2.3 起 init 复制 13-反模式扫描报告（TEST-ISSUES #9）
+- v2.4 起 init 写 .asset-docs.lock 保护（本轮 #1）
 EOF
+
+# v2.4 本轮 #1：写 lockfile 保护
+cat > "$LOCK_FILE" <<EOF
+# Asset Docs 保护锁（v2.4 新增）
+# 由 study-code-output-standard skill（${SKILL_VERSION}）写入
+# 删除本文件可解除保护
+# 创建时间：$(date -u +%Y-%m-%dT%H:%M:%SZ)
+# 目标项目：$TARGET
+EOF
+echo "==> 保护锁写入：$LOCK_FILE"
 
 # 8. 创建资产说明 README
 cat > "$OUTPUT_DIR/README.md" <<EOF
