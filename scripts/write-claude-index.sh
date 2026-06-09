@@ -4,8 +4,7 @@
 #
 # 策略：CLAUDE.md ≤ 80 行，标注"按需加载 CLAUDE-ASSET.md"
 #
-# v2.3 修复（修 TEST-ISSUES #1 #2）：
-# 1. 引用路径全改 ${SKILL_HOME}（v2.2 起 scripts/ assets/ references/prompts/ references/ 全部在 SKILL_HOME）
+# 1. 引用路径全改 ${SKILL_HOME}  scripts/ assets/ references/prompts/ references/ 全部在 SKILL_HOME）
 # 2. 加 13-反模式扫描报告到必读/AI 编程喂入列表
 
 set -e
@@ -60,7 +59,7 @@ cat > "$OUTPUT" <<EOF
 /study-code-output-standard
 \`\`\`
 
-### 校验资产（v2.2 起 scripts/ 留在 SKILL_HOME）
+### 校验资产  scripts/ 留在 SKILL_HOME）
 \`\`\`bash
 # 推荐：v2.2 新名
 bash \${SKILL_HOME}/scripts/check-all.sh

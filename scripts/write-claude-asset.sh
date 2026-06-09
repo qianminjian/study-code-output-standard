@@ -101,7 +101,7 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
 {
   echo "# $PROJECT_NAME — 资产详情"
   echo
-  echo "> **按需加载**：本文件是 13 篇资产的\"详细地图\"（v2.2 起加 13-反模式扫描报告）。"
+  echo "> **按需加载**：本文件是 13 篇资产的\"详细地图\" 加 13-反模式扫描报告）。"
   echo "> 配合 \`CLAUDE.md\`（轻量索引）使用。"
   echo "> 生成时间：$(date +%Y-%m-%d)"
   echo
@@ -127,7 +127,7 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
       10) name="业务流图（端到端）";;
       11) name="技术债与遗留项";;
       12) name="修复建议与优先级";;
-      13) name="反模式扫描报告（v2.2 新增）";;
+      13) name="反模式扫描报告（";;
     esac
     # 缺失资产：状态显示，但文件列不显示链接（修 P0-03 死链）
     if [ "$s" = "缺失" ]; then
@@ -171,7 +171,7 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
   echo
   echo "---"
   echo
-  echo "## 4. 校验（v2.2 起 scripts/ 留在 SKILL_HOME）"
+  echo "## 4. 校验  scripts/ 留在 SKILL_HOME）"
   echo
   echo '```bash'
   echo "bash \${SKILL_HOME}/scripts/check-all.sh"
@@ -180,14 +180,14 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
   echo '```'
   echo
   echo "包含 4 类校验："
-  echo "- \`check-meta.sh\` — 元信息头 6 必填 + 2 可选 + 30 天 last_updated 告警（v2.2 新增）"
+  echo "- \`check-meta.sh\` — 元信息头 6 必填 + 2 可选 + 30 天 last_updated 告警（"
   echo "- \`check-severity.sh\` — 严重度 P0-P3（P0>10 自动告警）"
   echo "- \`check-consistency.sh\` — 资产-代码一致性（端点 / Controller / Mapper 数对齐）"
   echo "- \`scan-antipatterns.sh\` — 反模式扫描（v2.3 满覆盖 24/24 标签）"
   echo
   echo "---"
   echo
-  echo "## 5. CI 接入（v2.2 起 scripts/ 路径用 \${SKILL_HOME}）"
+  echo "## 5. CI 接入  scripts/ 路径用 \${SKILL_HOME}）"
   echo
   echo '```yaml'
   echo "# .github/workflows/docs-validate.yml"
@@ -208,7 +208,7 @@ read_name()   { cat "$TMPDIR_STATUS/${1}_name" 2>/dev/null; }
   echo
   echo "---"
   echo
-  echo "## 6. 模板与 Prompt（v2.2 起留在 SKILL_HOME）"
+  echo "## 6. 模板与 Prompt 留在 SKILL_HOME）"
   echo
   echo "- 模板：\`\${SKILL_HOME}/assets/\`（13 份 .md.tmpl，含 v2.2 新增 13-反模式扫描报告）"
   echo "- AI Prompt：\`\${SKILL_HOME}/references/prompts/\`（13 份 .md，单点真源）"

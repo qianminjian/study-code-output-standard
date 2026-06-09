@@ -2,10 +2,10 @@
 # check-consistency.sh — 资产-代码一致性校验
 # 用法：bash scripts/check-consistency.sh
 #
-# v2.3 TEST-ISSUES #13：
+# 测试 13：
 #   默认 SRC_DIR 改 src/main/java（用户级项目标准布局）
 #   检测 placeholder 路径（com/example）→ ERROR 退出而非静默跳过
-# v2.3 TEST-ISSUES #8：
+# 测试 8：
 #   03 模板加 §1-B 摘要表后，校验逻辑改为"摘要端点数 vs grep 数"对齐
 set -e
 
@@ -17,7 +17,7 @@ DOCS_DIR="${DOCS_DIR:-asset-docs}"
 case "$SRC_DIR" in
   *com/example*|*src/main/java/com/example*)
     echo "ERROR: SRC_DIR 仍是 placeholder ($SRC_DIR)"
-    echo "  v2.3 起默认是 src/main/java；请用 SRC_DIR 环境变量传真实路径"
+    echo "  默认是 src/main/java；请用 SRC_DIR 环境变量传真实路径"
     echo "  例: SRC_DIR=wxcbrc_mgmt/wxcbrc_server/wxcbrc-boot/src/main/java/com/wrcb/wxcbrc/boot bash check-consistency.sh"
     exit 2
     ;;
@@ -30,7 +30,7 @@ if [ ! -d "$SRC_DIR" ]; then
 fi
 
 # 1. 端点数
-# v2.4 本轮 #3：单一数据源——读 §1 摘要表"端点数"列之和（不再读 §1-B）
+# 单一数据源——读 §1 摘要表"端点数"列之和（不再读 §1-B）
 expected=$(grep -rE "@(Get|Post|Put|Delete)Mapping" "$SRC_DIR" 2>/dev/null | wc -l | tr -d ' ')
 # 从 §1 摘要表的"| <Ctrl> | <prefix> | <tags> | <N> |"行提取"端点数"列（第 4 列）
 documented=$(awk -F'|' '/^## 1\./,/^## 2\./' "$DOCS_DIR"/03-*.md 2>/dev/null \

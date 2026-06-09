@@ -2,7 +2,6 @@
 # scan-antipatterns.sh — 扫描 24 类反模式（v2.3 满覆盖）
 # 用法：bash scripts/scan-antipatterns.sh
 #
-# v2.3 修复（修 TEST-ISSUES #4 #6 #7）：
 # 1. 覆盖 24/24 标签（原 8/24 = 33%）
 # 2. @secret-leak 排除函数调用 + 提高字符阈值（去 false positive）
 # 3. @hardcoded 排除 test/target 目录（去 test 文件 false positive）
@@ -98,7 +97,7 @@ scan_label "@cors-wildcard" "CORS 通配 🔴 P0" \
   "grep -rn 'allowedOrigins(\"\\*\")' '$SRC_DIR' | grep -vE '/test/' | grep -vE '/target/'"
 [ -d "$SRC_DIR" ] || echo "  (目录 $SRC_DIR 不存在，跳过)"
 
-# @actuator-exposure: actuator/druid 全公开（v2.3 加 antMatchers + permitAll 检测）
+# @actuator-exposure: actuator/druid 全公开（
 scan_label "@actuator-exposure" "actuator 暴露 🔴 P0" \
   "grep -rnE 'antMatchers.*\"/(actuator|druid)/\\*\\*\"\\.\\s*permitAll' '$SRC_DIR' | grep -vE '/test/'"
 [ -d "$SRC_DIR" ] || echo "  (目录 $SRC_DIR 不存在，跳过)"
@@ -139,7 +138,7 @@ scan_label "@null-pointer" "空指针风险 🟡 P1" \
   "echo '  建议集成 sonar/pmd，本工具不内建'"
 total_labels=$((total_labels-1))
 
-# @missing-tx: @Transactional 缺位（v2.3 新增）
+# @missing-tx: @Transactional 缺位（
 scan_label "@missing-tx" "缺事务 🟡 P1" \
   "grep -rL '@Transactional' '$SRC_DIR/*/service/' '$SRC_DIR/*/*/service/' 2>/dev/null | head -5"
 [ -d "$SRC_DIR" ] || echo "  (目录 $SRC_DIR 不存在，跳过)"

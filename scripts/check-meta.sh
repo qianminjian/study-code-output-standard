@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # check-meta.sh — 校验每篇资产元信息头 7 字段 + last_updated 时效
 # 用法：bash scripts/check-meta.sh
-# v2.2 变更：code_version 改为可选（非 git 项目可留空 / 写 <unversioned>）
+#  code_version 改为可选（非 git 项目可留空 / 写 <unversioned>）
 #         新增 last_updated > 30 天告警
 set -e
 

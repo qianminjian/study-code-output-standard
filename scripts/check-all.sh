@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# check-all.sh — 一键跑所有校验（v2.2 起替代 validate-all.sh）
+# check-all.sh — 一键跑所有校验 替代 validate-all.sh）
 # 用法：bash scripts/check-all.sh
 # 向后兼容：bash scripts/validate-all.sh 仍可跑（shim 转调本脚本）
 #
-# v2.3 修复（修 TEST-ISSUES #5）：
+# 修复（5 项已合并）：
 # 不再 set -e 一票否决；改为收集子脚本退出码，最终根据 errors 计数输出
 # "全部校验通过" 或 "校验完成：N 个步骤失败"
 

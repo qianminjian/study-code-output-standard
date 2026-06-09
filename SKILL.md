@@ -1,5 +1,6 @@
 ---
 name: study-code-output-standard
+version: 2.5.0
 description: |
   反向阅读任意代码项目，按"study-code-output-standard"方法论生成 12 篇标准资产文档到项目根目录的 asset-docs/。
   触发场景：用户说"反向阅读"、"提炼资产"、"分析项目结构"、"输出项目文档"、"code2docs"、"reformat this project"、"深度思考后提炼资产"等；亦可由深度思考 slash-command 触发：`/ttt`、`/ts`、`/tp`、`/tt`、`/tttt` 加上"提炼资产"作为动作目标。
@@ -10,11 +11,11 @@ description: |
 
 # Skill: study-code-output-standard
 
-> **路径约定**（v2.2 改用 shell 风格占位符，避免误读为可执行变量）：
+> **路径约定**（：
 > - `${PROJECT_ROOT}` = 用户调用 skill 时所在的项目根目录（默认 `pwd`）
 > - `${SPECIFIED_PROJECT}` = 用户用 `--path <path>` 显式指定的项目目录
 > - `${SKILL_HOME}` = 本 skill 安装位置（即仓库根目录，安装后是 `~/.claude/skills/study-code-output-standard/`）
-> - **本 skill v2.1 起采用仓库根 = skill 根布局**：SKILL.md、scripts/、assets/、references/ 都在 `${SKILL_HOME}` 下
+> - **本 skill 采用仓库根 = skill 根布局**：SKILL.md、scripts/、assets/、references/ 都在 `${SKILL_HOME}` 下
 >
 > **真实路径示例**（macOS 软链安装后）：
 > ```
@@ -37,9 +38,9 @@ description: |
 
 > **为什么把 `/ttt` 等加进触发词**：用户的实际入口往往是 `/ttt <动作>` 或 `/ts <动作>`，而不是直接 `/study-code-output-standard`。把深度思考类 slash-command 列为入口，能让本 skill 真正被触发。
 
-## references/prompts/ 实际使用（v2.4 重新定位）
+## references/prompts/ 实际使用
 
-> v2.4 起**明确定位**，避免与 assets/ @prompt 引用块重复：
+> **明确定位**，避免与 assets/ @prompt 引用块重复：
 
 | 资源 | 谁读 | 用途 |
 |---|---|---|
@@ -48,13 +49,13 @@ description: |
 | **`${SKILL_HOME}/references/methodology/04-反向阅读工作流.md`** | 人类 + AI 共同 | 6→7 步法详细方法论 |
 | **`${SKILL_HOME}/references/anti-patterns.md`** | 人类 + AI 共同 | 24 个反模式标签扫法 + 老朋友 5 案例 |
 
-> **⚠️ 重要工作流**（v2.4 修正）：
+> **⚠️ 重要工作流**：
 > - ❌ **不要**让 AI 直接读 `references/prompts/` 目录生成资产——实测发现实际**没用上**（设计意图 vs 实际使用脱节）
 > - ✅ **应该**让 AI 读 `assets/<NN>-*.md.tmpl`（含 @prompt 引用块 + 完整骨架）
 > - ✅ `references/prompts/` 保留作为人类维护者的"prompt 灵感库"——review AI 写出时对照
 > - 单点真源原则：模板维护时**同步刷** `references/prompts/<NN>-*.md`（注释提示）
 
-## 老系统快速通道（v2.4 新增）
+## 老系统快速通道（
 
 > 适用：jQuery 1.x / 无 DDL / 无 Swagger / 无 git / 无 README / 上古前后端分离站（如 wxcbrc）
 
@@ -68,7 +69,7 @@ description: |
 
 > 详细降级矩阵见 `references/asset-types.md` "老旧系统"分支
 
-## 写路径验证（v2.4 新增）
+## 写路径验证（
 
 > ⚠️ **每篇资产写完立即 grep 验证**（确保写对位置）——本次完整跑 13 篇时发现 cat heredoc 写 .md 路径错会 silent 写错位置
 
@@ -100,7 +101,7 @@ done
 - init 脚本写 `.asset-docs.lock` 文件锁——重复 init 会被拦截
 - 删除 lock 或加 `--force` 强制覆盖
 
-## Token 预算（v2.4 新增）
+## Token 预算（
 
 完整跑 13 篇资产的**预估 token 量级**（基于 wxcbrc 1.5 万行实测）：
 
@@ -131,14 +132,14 @@ done
 
 用户在 `${PROJECT_ROOT}`（或 `${SPECIFIED_PROJECT}`）下，调用本 skill 后：
 
-1. **自动按 7 步法执行反向阅读（v2.2 新增 Step 7·回写）**（勘探→分类→抽取→校验→标注→派送）
+1. **自动按 7 步法执行反向阅读（**（勘探→分类→抽取→校验→标注→派送）
 2. **输出到 `${PROJECT_ROOT}/asset-docs/`**
 3. **生成 `${PROJECT_ROOT}/CLAUDE.md`**（轻量索引，**按需加载**）
 4. **生成 `${PROJECT_ROOT}/CLAUDE-ASSET.md`**（资产详情，**按需加载**）
 
 ## 7 步法执行流程
 
-### Step 0 · 启动确认（v2.2 新增 · Claude Code 中）
+### Step 0 · 启动确认（
 
 **目标**：避免"启动即跑全量 6 步法"的不可控体验，先与用户确认范围/覆盖/owner。
 
@@ -226,16 +227,16 @@ done
 
 **必做动作**：
 - Bash: `DOCS_DIR=${PROJECT_ROOT}/asset-docs bash ${SKILL_HOME}/scripts/check-all.sh`
-  - v2.2 起 scripts 留在 `${SKILL_HOME}`（不再复制到用户项目，避免污染）
+  -  scripts 留在 `${SKILL_HOME}`（不再复制到用户项目，避免污染）
   - 向后兼容：老 `validate-all.sh` shim 仍可调，自动转 `check-all.sh`
-  - **v2.3 起** `check-all.sh` 不再静默报"全部校验通过"——子脚本 `exit 1` 会显式标 `==> 校验完成：N 个步骤失败`
+  - `check-all.sh` 不再静默报"全部校验通过"——子脚本 `exit 1` 会显式标 `==> 校验完成：N 个步骤失败`
 - 修复脚本报告的所有错误
 
 > ⚠️ **必须人工抽样 5-10 个端点 + 3-5 个业务流**，否则视为半成品——脚本只发现候选名单，最终正确性靠人。
 
 - 抽 5-10 个端点对照 Swagger / Postman 验证（人工）
 
-**⚠️ 无 Swagger / Postman 时的替代校验**（v2.2 新增）：
+**⚠️ 无 Swagger / Postman 时的替代校验**（：
 
 很多老项目（无 OpenAPI 文档、无 Postman 集合）不能直接对照。以下是 3 种降级方案，按可信度从高到低：
 
@@ -263,7 +264,7 @@ done
 2. Read: `${SKILL_HOME}/references/anti-patterns.md`
 3. 把扫出的反模式**分别落到两份资产**：
    - **`11-技术债与遗留项.md`**：只收"**影响业务且有修复方案**"的反模式（如 @sqlinjection / @secret-leak / @cors-wildcard）
-   - **`13-反模式扫描报告.md`（v2.2 新增）**：收"**模式分布 / 扫法 / 降级建议**"，按 24 个标签分类，含统计与风险雷达
+   - **`13-反模式扫描报告.md`（**：收"**模式分布 / 扫法 / 降级建议**"，按 24 个标签分类，含统计与风险雷达
 4. 严重度 P0-P3 标注，位置 `<文件>:<行号>` 格式
 
 **为什么拆 13 号**：原 11-技术债清单被 24 个反模式标签淹没（典型 30+ 条），不易聚焦业务问题；13 号报告专注"反模式本身"——标签分布 / 严重度热图 / 降级建议。
@@ -313,7 +314,7 @@ done
    ```
 
 3. **last_updated 时效校验**：
-   - `check-meta.sh` 每日检查 12 篇 `last_updated` 距今 > 30 天 → 告警（v2.2 新增）
+   - `check-meta.sh` 每日检查 12 篇 `last_updated` 距今 > 30 天 → 告警（
    - 不阻断 PR，但要求 owner 在合并前刷新
 
 4. **版本对齐**：
@@ -403,7 +404,7 @@ done
    - 不省 frontmatter（6 必填 + 2 可选：`id` / `version` / `last_updated` / `data_source` / `owner` / `ai_consumable` 为必填；`code_version` / `severity_taxonomy` 为可选；详见 `02-目录与命名规范.md §3`）
    - 不省强制列
 
-## 附加资产（v2.2 新增段 · #12 修复）
+## 附加资产（
 
 skill 在 `${PROJECT_ROOT}/asset-docs/` 下生成的核心是 **12 篇编号资产**（00-12）。除此以外还有 **3 份附加资产**，按需使用：
 

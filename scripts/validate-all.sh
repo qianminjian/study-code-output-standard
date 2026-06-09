@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# validate-all.sh — shim，v2.2 起改名为 check-all.sh
+# validate-all.sh — shim，改名为 check-all.sh
 # 用法：bash scripts/validate-all.sh  (向后兼容，自动转调 check-all.sh)
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"

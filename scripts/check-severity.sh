@@ -7,7 +7,7 @@ set -e
 
 DOCS_DIR="${DOCS_DIR:-asset-docs}"
 
-# 修复 P2-03：默认排除 assets/ 和 references/prompts/（教学副本会污染统计）
+# 默认排除 assets/ 和 references/prompts/（教学副本会污染统计）
 INCLUDE_ARGS=()
 if [ -n "$SEVERITY_INCLUDE_DIRS" ]; then
   for d in $SEVERITY_INCLUDE_DIRS; do
@@ -43,7 +43,7 @@ P0=$(grep -rhE --exclude-dir=templates --exclude-dir=ai-prompts \
 case "$P0" in
   ''|*[!0-9]*) P0=0 ;;
 esac
-# v2.4 本轮 #9：统计总问题数 + P0 占比告警
+# 统计总问题数 + P0 占比告警
 TOTAL=$(grep -rhE --exclude-dir=templates --exclude-dir=ai-prompts \
   "[🔴🟡🟢⚪] P[0-3]|\\| P[0-3] \\|" "$DOCS_DIR" 2>/dev/null | wc -l | tr -d ' ' | head -1)
 case "$TOTAL" in
