@@ -2,28 +2,45 @@
 # check-consistency.sh — 资产-代码一致性校验
 # 用法：bash scripts/check-consistency.sh
 #
-# 注：本脚本示例基于 Java + Vue 项目。其它项目需调整路径。
+# v2.3 TEST-ISSUES #13：
+#   默认 SRC_DIR 改 src/main/java（用户级项目标准布局）
+#   检测 placeholder 路径（com/example）→ ERROR 退出而非静默跳过
+# v2.3 TEST-ISSUES #8：
+#   03 模板加 §1-B 摘要表后，校验逻辑改为"摘要端点数 vs grep 数"对齐
 set -e
 
-SRC_DIR="${SRC_DIR:-src/main/java/com/example}"
+DEFAULT_SRC_DIR="src/main/java"
+SRC_DIR="${SRC_DIR:-$DEFAULT_SRC_DIR}"
 DOCS_DIR="${DOCS_DIR:-asset-docs}"
 
+# v2.3 #13：检测 placeholder 路径
+case "$SRC_DIR" in
+  *com/example*|*src/main/java/com/example*)
+    echo "ERROR: SRC_DIR 仍是 placeholder ($SRC_DIR)"
+    echo "  v2.3 起默认是 src/main/java；请用 SRC_DIR 环境变量传真实路径"
+    echo "  例: SRC_DIR=wxcbrc_mgmt/wxcbrc_server/wxcbrc-boot/src/main/java/com/wrcb/wxcbrc/boot bash check-consistency.sh"
+    exit 2
+    ;;
+esac
+
 if [ ! -d "$SRC_DIR" ]; then
-  echo "WARN: $SRC_DIR 不存在，跳过一致性检查"
+  echo "ERROR: $SRC_DIR 不存在"
   echo "  设置 SRC_DIR 环境变量指向你的代码目录"
-  exit 0
+  exit 2
 fi
 
 # 1. 端点数
 expected=$(grep -rE "@(Get|Post|Put|Delete)Mapping" "$SRC_DIR" 2>/dev/null | wc -l | tr -d ' ')
-documented=$(grep -cE "^\| (GET|POST|PUT|DELETE) \|" "$DOCS_DIR"/03-*.md 2>/dev/null | head -1 || echo 0)
-if [ -n "$expected" ] && [ -n "$documented" ]; then
+# v2.3 #8：从 03 模板 §1-B 摘要表读"端点总数"行
+documented=$(grep -A 10 "## 1-B" "$DOCS_DIR"/03-*.md 2>/dev/null | grep -E "端点总数.*\|" | head -1 | grep -oE '[0-9]+' | head -1 || echo 0)
+[ -n "$documented" ] || documented=0
+if [ "$expected" -gt 0 ] && [ "$documented" -gt 0 ]; then
   if [ "$expected" -ne "$documented" ]; then
     echo "MISMATCH: 端点数 expected=$expected documented=$documented"
-    echo "  03-Controller 文档需补充 $((expected - documented)) 个端点"
+    echo "  03-Controller 文档 §1-B 摘要表需对齐 ($((expected - documented)) 差距)"
     exit 1
   fi
-  echo "OK: 端点数 $expected == 文档 $documented"
+  echo "OK: 端点数 $expected == 摘要表 $documented"
 fi
 
 # 2. Controller 数

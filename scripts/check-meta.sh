@@ -25,8 +25,8 @@ for f in "$DOCS_DIR"/*.md; do
       continue
       ;;
   esac
-  # 只校验 00-12 编号的资产
-  if ! echo "$basename" | grep -qE "^[0-9]{2}-"; then
+  # 只校验 00-12 编号的资产（v2.3 #10：支持 100+ 编号）
+  if ! echo "$basename" | grep -qE "^[0-9]{2,3}-"; then
     continue
   fi
   for k in "${REQUIRED[@]}"; do

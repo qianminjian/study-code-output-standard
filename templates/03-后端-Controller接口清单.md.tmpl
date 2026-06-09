@@ -16,6 +16,7 @@
 # 03 · 后端 Controller 接口清单
 
 > 共 N 个 Controller。所有路径前缀 `<prefix>`。
+> v2.3 改进：§1-B 摘要表必填（满足 check-consistency 端点对齐），§2 详表可按 Controller 拆文件（如 `03-端点详情-<Controller>.md`）。
 
 ## 1. 概览
 
@@ -25,6 +26,22 @@
 
 > 标注 ⚠️ 的是 `@Api(tags=...)` 错误标签。
 
+## 1-B. 端点摘要（v2.3 新增 · 必填 · check-consistency 对账）
+
+> 本表是 check-consistency.sh 校验的"标准答案"——**必须与代码 grep 数对齐**。
+> §2 详表可分文件，但**本摘要表所有数字必须精确**。
+
+| 项目 | 数量 | 验证命令 | 状态 |
+|---|:-:|---|:-:|
+| Controller 总数 | <N> | `find <controller-dir> -name "*Controller.java" \| wc -l` | ⬜ |
+| **端点总数**（方法级）| <N> | `grep -rE "@(Get\|Post\|Put\|Delete)Mapping" <controller-dir> \| wc -l` | ⬜ |
+| 公开端点数 | <N> | `grep -rl "@CrossOrigin" <controller-dir> \| wc -l`（粗略）| ⬜ |
+| 鉴权端点数 | <N> | `grep -rl "@PreAuthorize" <controller-dir> \| wc -l`（粗略）| ⬜ |
+| 全局前缀 | <无/api/v1> | `grep -r "@RequestMapping(\"/" <controller-dir> \| head -1` | ⬜ |
+| Swagger 启用 | <是/否> | `grep -r "@Api\|springfox\|springdoc" <controller-dir> \| head -1` | ⬜ |
+
+> 校验不通过示例：expected=66 documented=19 → 03 需补充 47 个端点（v2.2 之前问题，v2.3 起需对齐）。
+
 ## 2. 详细接口清单
 
 ### 2.1 <Controller>（`<prefix>`）
@@ -32,6 +49,8 @@
 |---|---|---|---|:-:|---|
 | GET | `/path` | <入参> | <权限> | ✅/— | <说明> |
 | POST | `/path` | <入参> | <权限> | ✅/— | <说明> |
+
+> 详表内容可分文件：`asset-docs/03-端点详情-<Controller>.md`，本节保持精简。
 
 ## 3. 权限字符串全集（去重）
 
