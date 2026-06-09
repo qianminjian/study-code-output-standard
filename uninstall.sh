@@ -8,6 +8,8 @@
 
 set -e
 
+VERSION="2.1.0"
+
 # 修复 P3-02：支持 --path 参数
 TARGET=""
 case "${1:-}" in
@@ -18,12 +20,17 @@ case "${1:-}" in
       exit 2
     fi
     ;;
+  --version)
+    echo "study-code-output-standard $VERSION"
+    exit 0
+    ;;
   --help|-h)
     cat <<EOF
 用法：bash uninstall.sh [选项] [target-dir]
 
 选项：
   --path <dir>   指定要卸载的目录
+  --version      显示版本
   --help         显示帮助
 
 默认行为：扫描常见路径（~/.claude/skills/、项目级 .claude/skills/）。

@@ -14,7 +14,7 @@
 
 set -e
 
-VERSION="2.0.0"
+VERSION="2.1.0"
 
 # 0. 解析参数
 MODE=""
@@ -52,7 +52,6 @@ while [ $i -lt ${#ARGS[@]} ]; do
       echo "study-code-output-standard $VERSION"
       exit 0
       ;;
-    --force|-f) FORCE=true; i=$((i+1)) ;;
     --help|-h)
       cat <<EOF
 用法：bash install.sh [选项]
