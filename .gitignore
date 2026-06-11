@@ -16,6 +16,8 @@ asset-docs/
 _proc-use/
 # atdo 运行时状态/报告目录
 .phase-execution/
+# Bug 报告 / 改进建议（过程记录，未决议前不入版本控制）
+buginfo/
 # 环境变量
 .env
 
