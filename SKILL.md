@@ -199,21 +199,21 @@ done
 
 2. 按 04-工作流 §3.1 的依赖顺序，逐个生成：
 
-| 顺序 | 资产 | Prompt 文件 |
+| 顺序 | 资产 | 模板文件 |
 |:-:|---|---|
-| 1 | 02-数据模型与表结构 | `${PROJECT_ROOT}/asset-docs/references/prompts/02-数据模型与表结构.md` |
-| 2 | 03-API 清单 | `${PROJECT_ROOT}/asset-docs/references/prompts/03-后端-Controller接口清单.md` |
-| 3 | 04-Mapper 清单 | `${PROJECT_ROOT}/asset-docs/references/prompts/04-后端-Mapper操作清单.md` |
-| 4 | 06-安全认证 | `${PROJECT_ROOT}/asset-docs/references/prompts/06-后端-安全认证.md` |
-| 5 | 05-服务与业务 | `${PROJECT_ROOT}/asset-docs/references/prompts/05-后端-服务与业务逻辑.md` |
-| 6 | 07-前端页面（如适用）| `${PROJECT_ROOT}/asset-docs/references/prompts/07-前端-页面与组件清单.md` |
-| 7 | 08-前端状态（如适用）| `${PROJECT_ROOT}/asset-docs/references/prompts/08-前端-状态管理与路由.md` |
-| 8 | 09-静态/多端（如适用）| `${PROJECT_ROOT}/asset-docs/references/prompts/09-静态前台.md` |
-| 9 | 10-业务流图 | `${PROJECT_ROOT}/asset-docs/references/prompts/10-业务流图.md` |
-| 10 | 11-技术债 | `${PROJECT_ROOT}/asset-docs/references/prompts/11-技术债与遗留项.md` |
-| 11 | 12-修复建议 | `${PROJECT_ROOT}/asset-docs/references/prompts/12-修复建议与优先级.md` |
-| 12 | 01-系统总览 | `${PROJECT_ROOT}/asset-docs/references/prompts/01-系统总览.md` |
-| 13 | 00-文档索引 | （无 Prompt，直接生成） |
+| 1 | 02-数据模型与表结构 | `${SKILL_HOME}/assets/02-数据模型与表结构.md.tmpl` |
+| 2 | 03-API 清单 | `${SKILL_HOME}/assets/03-后端-Controller接口清单.md.tmpl` |
+| 3 | 04-Mapper 清单 | `${SKILL_HOME}/assets/04-后端-Mapper操作清单.md.tmpl` |
+| 4 | 06-安全认证 | `${SKILL_HOME}/assets/06-后端-安全认证.md.tmpl` |
+| 5 | 05-服务与业务 | `${SKILL_HOME}/assets/05-后端-服务与业务逻辑.md.tmpl` |
+| 6 | 07-前端页面（如适用）| `${SKILL_HOME}/assets/07-前端-页面与组件清单.md.tmpl` |
+| 7 | 08-前端状态（如适用）| `${SKILL_HOME}/assets/08-前端-状态管理与路由.md.tmpl` |
+| 8 | 09-静态/多端（如适用）| `${SKILL_HOME}/assets/09-静态前台.md.tmpl` |
+| 9 | 10-业务流图 | `${SKILL_HOME}/assets/10-业务流图.md.tmpl` |
+| 10 | 11-技术债 | `${SKILL_HOME}/assets/11-技术债与遗留项.md.tmpl` |
+| 11 | 12-修复建议 | `${SKILL_HOME}/assets/12-修复建议与优先级.md.tmpl` |
+| 12 | 01-系统总览 | `${SKILL_HOME}/assets/01-系统总览.md.tmpl` |
+| 13 | 00-文档索引 | （无模板，直接生成） |
 
 3. 每篇资产**必须**：
    - 顶部 frontmatter（id / version / last_updated / data_source / code_version / owner / ai_consumable）
