@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: tests
+    uses: ./.github/workflows/_test.yml
+    with:
+      working-directory: '.'
+      test-command: 'bash tests/run-all.sh'
+
+  lint:
+    name: lint
+    uses: ./.github/workflows/_lint.yml
+    with:
+      shell-paths: '. scripts tests'
+      markdown-paths: 'README.md SKILL.md references assets'
+
+  secret-scan:
+    name: secret-scan
+    uses: ./.github/workflows/_secret-scan.yml
+
+  ci-status:
+    name: ci-status
+    runs-on: ubuntu-latest
+    needs: [test, lint, secret-scan]
+    if: always()
+    steps:
+      - name: Report status
+        run: |
+          echo "test:        ${{ needs.test.result }}"
+          echo "lint:        ${{ needs.lint.result }}"
+          echo "secret-scan: ${{ needs.secret-scan.result }}"
+          if [ "${{ needs.test.result }}" != "success" ] \
+            || [ "${{ needs.lint.result }}" != "success" ] \
+            || [ "${{ needs.secret-scan.result }}" != "success" ]; then
+            echo "::error::CI failed (see above)"
+            exit 1
+          fi
+          echo "==> CI 全过"
