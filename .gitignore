@@ -14,6 +14,8 @@
 asset-docs/
 # 过程产物目录（设计草稿 / 临时脚本 / /atdo 计划等）
 _proc-use/
+# atdo 运行时状态/报告目录
+.phase-execution/
 # 环境变量
 .env
 
