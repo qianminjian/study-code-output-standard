@@ -12,6 +12,8 @@
 *.log
 # 用户项目资产输出（skill 测试时可能生成）
 asset-docs/
+# 过程产物目录（设计草稿 / 临时脚本 / /atdo 计划等）
+_proc-use/
 # 环境变量
 .env
 
