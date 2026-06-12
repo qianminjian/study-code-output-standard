@@ -88,8 +88,18 @@ scan_label "@sqlinjection" "SQL 注入 🔴 P0" \
 [ -d "$XML_DIR" ] || echo "  (目录 $XML_DIR 不存在，跳过)"
 
 # @secret-leak: 真密钥/密码硬编码（v2.3 排除函数调用 + 阈值 16）
+# v2.5 扩展:同时扫 yml + properties 配置（之前只扫 Java，漏 yml 中明文密钥）
+# yml 文件可能在 SRC_DIR 之外（runner 模块的 resources），用 SRC_DIR 上溯到含 <modules> 的 parent pom.xml
+PROJECT_ROOT="$SRC_DIR"
+while [ "$(dirname "$PROJECT_ROOT")" != "/" ]; do
+  if [ -f "$PROJECT_ROOT/pom.xml" ] && grep -q "<modules>" "$PROJECT_ROOT/pom.xml" 2>/dev/null; then
+    break
+  fi
+  PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
+done
 scan_label "@secret-leak" "密钥/密码明文 🔴 P0" \
-  "grep -rnE '(secret|password|passwd|apikey|api_key|access_key|private_key|jwt[._-]?secret)\\s*[:=]\\s*[\"\\'][A-Za-z0-9_./+=-]{16,}[\"\\']' '$SRC_DIR' | grep -viE 'getToken|getHeader|setAttribute|getParameter|request\\.|response\\.' | grep -vE '/test/' | grep -vE '/target/'"
+  "(grep -rnE '(secret|password|passwd|apikey|api_key|access_key|private_key|jwt[._-]?secret)\\s*[:=]\\s*[\"\\'][A-Za-z0-9_./+=-]{16,}[\"\\']' '$SRC_DIR' 2>/dev/null | grep -viE 'getToken|getHeader|setAttribute|getParameter|request\\.|response\\.' | grep -vE '/test/' | grep -vE '/target/'; \
+   grep -rnE '(secret|password|passwd|apikey|api_key|access_key|private_key|jwt[._-]?secret)\\s*:\\s*[\"\\']?[A-Za-z0-9_./+=-]{8,}[\"\\']?' '$PROJECT_ROOT' 2>/dev/null --include='*.yml' --include='*.yaml' --include='*.properties' | grep -vE '/test/' | grep -vE '/target/' | head -10)"
 [ -d "$SRC_DIR" ] || echo "  (目录 $SRC_DIR 不存在，跳过)"
 
 # @cors-wildcard: CORS 通配
