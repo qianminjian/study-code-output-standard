@@ -137,6 +137,113 @@ done
 3. **生成 `${PROJECT_ROOT}/CLAUDE.md`**（轻量索引，**按需加载**）
 4. **生成 `${PROJECT_ROOT}/CLAUDE-ASSET.md`**（资产详情，**按需加载**）
 
+## 多模块批量执行协议
+
+> **适用**：v3.5 并行模式对多个独立模块/子项目进行批量资产生成时。
+> **目标**：Turn 中断（agent stall / context 溢出 / 用户主动中断）后可无缝恢复，不丢进度不重复工作。
+
+### A. 状态文件定义
+
+**模块状态文件** `asset-docs/.module-status.json`（每个模块目录下）：
+
+```json
+{
+  "module": "<模块名>",
+  "status": "pending|in_progress|complete|failed",
+  "started_at": "<ISO-8601>",
+  "completed_at": "<ISO-8601>",
+  "assets_completed": ["02-数据模型", "03-API清单"],
+  "assets_failed": [],
+  "errors": [],
+  "worker_pid": 12345
+}
+```
+
+- **写者**：每个 worker agent 开始前将状态置为 `in_progress`，完成后置为 `complete` 或 `failed`
+- **写时机**：状态变化时**立即写入**（不延后到模块完成）
+- **原子性**：写入到临时文件再 `mv`，避免读到半写入文件
+
+**批量进度文件** `PROJECT_ROOT/asset-docs/.batch-progress.json`（编排者维护）：
+
+```json
+{
+  "batch_id": "<timestamp>-<project>",
+  "total_modules": 24,
+  "mode": "v3.5-parallel",
+  "phase": 1,
+  "modules": {
+    "<模块名>": {
+      "status": "pending",
+      "module_status_path": "<模块>/asset-docs/.module-status.json",
+      "assigned_worker": null
+    }
+  },
+  "checkpoints": {
+    "phase_1_complete": false,
+    "phase_2_complete": false,
+    "phase_3_complete": false,
+    "phase_4_complete": false
+  },
+  "aggregation": {
+    "01_system_overview_complete": false,
+    "00_cross_module_complete": false,
+    "00_cross_security_complete": false
+  },
+  "last_updated": "<ISO-8601>",
+  "resumed_from": null
+}
+```
+
+- **写者**：编排者（仅编排者，worker 不写）
+- **写时机**：Phase 开始/结束、模块分配/完成时**立即**更新
+- **共享机制**：后续 session 恢复时编排者读取此文件重建进度
+
+### B. Turn 中断恢复协议
+
+**中断类型**：
+| 类型 | 检测方式 | 恢复策略 |
+|------|---------|---------|
+| Agent stall | agent-watchdog.sh 检测 300s 无输出 | kill stall agent，读取 `.batch-progress.json` 恢复 |
+| Context 溢出 | 编排者自检 context < 30K | 保存 `.batch-progress.json`，提示用户新开会话 |
+| 用户中断 | Ctrl+C / 关闭会话 | 编排者捕获信号，写 `.batch-progress.json` 后退出 |
+
+**恢复流程（编排者在新 Turn 启动时必做）**：
+
+```
+1. Read PROJECT_ROOT/asset-docs/.batch-progress.json
+2. 若不存在 → 全新批量执行，从 Step 0 开始
+3. 若存在：
+   a. 读取 `modules` 字典，列出 status 为 pending / in_progress 的模块
+   b. 检查 status 为 in_progress 的模块 → Read 其 `.module-status.json`
+      - 若 `assets_completed` 非空 → 恢复到下一个未完成资产
+      - 若 `assets_completed` 为空 → 从头开始（上一个 session 未产出）
+   c. 恢复 `checkpoints` 对应的 Phase 管线
+   d. 输出恢复摘要：「从 Phase {N} 恢复，{X}/{Y} 模块已完成」
+4. 恢复完成后继续批量执行
+```
+
+### C. 状态一致性约束
+
+- **单一写入者**：`.batch-progress.json` 只由编排者写，`.module-status.json` 只由对应 worker 写
+- **幂等恢复**：恢复时若发现 `status: complete` 的模块 → 跳过，不重复执行
+- **孤儿清理**：恢复时若发现 `status: in_progress` 超过 30 分钟未更新 → 视为 stall，重置为 `pending` 重新分配
+- **聚合排他**：跨模块聚合（00-CROSS-MODULE.md）仅在 `checkpoints.phase_4_complete = true` 后执行
+
+### D. 恢复验证
+
+恢复完成后编排者必须：
+
+```bash
+# 验证 .batch-progress.json 与各模块状态一致
+for mod in $(jq -r '.modules | keys[]' asset-docs/.batch-progress.json); do
+  mod_status=$(jq -r ".modules[\"$mod\"].status" asset-docs/.batch-progress.json)
+  file_status=$(jq -r '.status' "$mod/asset-docs/.module-status.json" 2>/dev/null || echo "missing")
+  if [ "$mod_status" != "$file_status" ]; then
+    echo "WARN: 状态不一致 $mod — batch=$mod_status file=$file_status"
+  fi
+done
+```
+
 ## 串行生成模式 (v3.0)
 
 > **适用**：所有项目规模。小/中型项目默认走此模式。大型项目（>10 万行）推荐用 `## 并行生成模式 (v3.5)` 提速 + 缓解上下文溢出。
