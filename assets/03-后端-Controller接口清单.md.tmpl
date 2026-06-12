@@ -27,7 +27,10 @@
 
 | Controller | 前缀 | Api tags | 端点数 | 公开端点数 | 鉴权策略 | 全局前缀 | Swagger 启用 |
 |---|---|---|:-:|:-:|---|---|---|
-| `<Controller>` | `<prefix>` | `<tags>` | `<N>` | `<N>` | @PreAuthorize / permitAll / @CrossOrigin | <无/api/v1> | <是/否> |
+| **示例 ↓** | | | | | | | |
+| `HandleController` | `/handle` | 平台操作 | 4 | 0 | 网关鉴权 | `/api/v1` | 是 |
+| `NoticeController` | `/notice` | 通知接口 | 7 | 2 | @PreAuthorize | `/api/v1` | 是 |
+| `<你的Controller>` | `<prefix>` | `<tags>` | `<N>` | `<N>` | @PreAuthorize / permitAll / @CrossOrigin | `<无/api/v1>` | `<是/否>` |
 
 > **⚠️ 格式要求（v2.6 新增）**：
 > - Controller 名称**必须用反引号**（`` `ControllerName` ``），**不是尖括号** `<ControllerName>`。
