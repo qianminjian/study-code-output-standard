@@ -1,0 +1,60 @@
+name: smoke-test
+
+on:
+  workflow_call:
+
+jobs:
+  smoke:
+    name: smoke-test (v3.5 minimal)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set UTF-8 locale
+        run: |
+          sudo locale-gen en_US.UTF-8 >/dev/null 2>&1 || true
+          echo "LANG=en_US.UTF-8" >> "$GITHUB_ENV"
+          echo "LC_ALL=en_US.UTF-8" >> "$GITHUB_ENV"
+
+      - name: Smoke — bash syntax check (all scripts)
+        run: |
+          set -e
+          echo "=== bash -n (all scripts) ==="
+          fail=0
+          while IFS= read -r f; do
+            if ! bash -n "$f" 2>&1; then
+              echo "::error::syntax error in $f"
+              fail=1
+            else
+              echo "  ✓ $f"
+            fi
+          done < <(find scripts -name '*.sh' -type f)
+          [ "$fail" -eq 0 ] || exit 1
+
+      - name: Smoke — scan-antipatterns.sh headless
+        run: |
+          set -e
+          echo "=== scan-antipatterns.sh (headless) ==="
+          bash scripts/scan-antipatterns.sh
+          echo "  ✓ scan-antipatterns.sh ran to completion"
+
+      - name: Smoke — init-asset-docs.sh (temp dir)
+        run: |
+          set -e
+          echo "=== init-asset-docs.sh (temp project) ==="
+          TMPDIR=$(mktemp -d)
+          trap 'rm -rf "$TMPDIR"' EXIT
+          echo "# test-project" > "$TMPDIR/README.md"
+          bash scripts/init-asset-docs.sh "$TMPDIR"
+          [ -d "$TMPDIR/asset-docs" ] || { echo "::error::asset-docs not created"; exit 1; }
+          count=$(ls "$TMPDIR/asset-docs"/*.md 2>/dev/null | wc -l)
+          echo "  ✓ asset-docs/ created ($count md files)"
+          echo "=== check-consistency.sh (temp project) ==="
+          DOCS_DIR="$TMPDIR/asset-docs" bash scripts/check-consistency.sh || true
+          echo "  ✓ check-consistency.sh completed"
+          echo "=== check-severity.sh (temp project) ==="
+          DOCS_DIR="$TMPDIR/asset-docs" bash scripts/check-severity.sh || true
+          echo "  ✓ check-severity.sh completed"
