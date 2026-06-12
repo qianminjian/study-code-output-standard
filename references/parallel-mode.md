@@ -81,6 +81,40 @@ Phase 4 ─── 并行 11+13，然后 12
 
 > **关键发现（v3.5 端到端验证）**：11 资产的"集成债"是 v3.5 跨资产对比的**核心价值**——单看任何上游资产都漏。变体 D 必须做跨资产对比，不能停留在单资产聚合。
 
+### ⚠️ 单 Worker 文件数上限（v2.6 新增 · 防 context 溢出）
+
+**背景**：24 模块全量测试发现，当单个 worker 分配的文件数超过临界值时，
+agent context 溢出 → stall（4/28 agent 失速，14%）。v3.5 的 4 个 worker 虽并行，
+但如果 03 worker 被要求逐个 Read 71 个 Controller（synergy 模块），
+71 × 500 行 = 35K 行读取量，可能超过 worker 的 200K token 缓存窗口。
+
+**上限表**（编排者在 Phase 1 spawn 前必须检查）：
+
+| 变体 | 类型 | 单 Worker 文件数上限 | 超标时 |
+|------|------|:---:|------|
+| A (Extract) | 02/03/04/06 | **≤ 80** 个 Java 文件 | 02/03 各拆为 2 worker（如 synergy 95 entity → 48+47） |
+| B (Analyze) | 06/11/13 | **≤ 60** 个 Java 文件 | 11/13 各拆为 2 worker |
+| C (Synthesize) | 05/10 | **≤ 40** 个 Java 文件（**最重变体**，需读 upstream 资产） | 05 拆为 2 worker（按 Service 包拆分）；10 拆为 2 worker（业务流前半/后半） |
+| D (Aggregate) | 01/00/12 | **≤ 20** 个上游资产文件（通读全部上游） | 01/00 由编排者自己写（本来就是），12 不拆 |
+
+**超标检测**（编排者 Phase 1 启动前跑一次）：
+```bash
+CONTROLLER_COUNT=$(find ${SRC_DIR} -name "*Controller.java" | wc -l)
+ENTITY_COUNT=$(find ${SRC_DIR} -name "entity" -type d -exec find {} -name "*.java" \; | wc -l)
+SERVICE_COUNT=$(find ${SRC_DIR} -name "*Service*.java" | wc -l)
+
+# Phase 1 plan check
+if [ $CONTROLLER_COUNT -gt 80 ]; then
+  echo "⚠️  03 worker requires ${CONTROLLER_COUNT} Controllers (> 80), splitting into 03a+03b"
+fi
+if [ $ENTITY_COUNT -gt 80 ]; then
+  echo "⚠️  02 worker requires ${ENTITY_COUNT} entities (> 80), splitting into 02a+02b"
+fi
+```
+
+**v3.0 模式同样适用**：v3.0 单个 agent 承担全部文件，按 Step -1 的规模检测路由到 v3.5 后，
+上述上限才生效。v3.0 模式下不检查（因为已经通过 Step -1 的路由阈值控制）。
+
 ---
 
 ## E. 编排者 Prompt 组装逻辑
