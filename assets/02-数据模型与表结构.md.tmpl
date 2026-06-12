@@ -45,26 +45,10 @@
 
 ## 2-B. ⚠️ 无 DDL 时的推断模式（可选 · 降级）
 
-> **何时启用**：项目**没有** `*.sql` / `flyway/` / `liquibase/` / `db-scripts/` 等 DDL 来源时启用本段；**同时** §2 「数据库表清单」标 N/A。
-> **典型场景**：老项目（wxcbrc、legacy Web）只有 XML + Model，无建表脚本。
+> 详细推断策略见 `references/02-infer-mode.md`（推断源 4 级 / 强制标记 / 示例 / 真实案例）。
+> 本节保留用法触发条件；具体推断逻辑 $2-B 内容已迁移到 references/，本模板不重复。
 
-**推断源（按可信度从高到低）**：
-
-1. **MyBatis XML 的 resultType / parameterType**（最可信）—— grep `<resultMap>` 和 `resultType="<entity>"` 拿表/字段映射
-2. **ORM 实体的 `@Table` / `@Entity` 注解**（Java JPA / Hibernate）
-3. **Mapper 接口方法签名**（参数 + 返回值类型）
-4. **前端 `http/modules/*.js` 中的字段名**（最弱，仅做交叉验证）
-
-**强制标记**：所有推断出的表，**「表名」列前加 ⚠️**，并在 §元信息 表中加一行"DDL 来源：无（推断）"。
-
-**示例**：
-
-| ⚠️ 表名（推断） | 中文 | 主要字段 | 索引/约束 |
-|---|---|---|---|
-| ⚠️ `<table_from_resultType>` | 推断：<根据 Model 名> | 推断：<从 resultMap> | ⚠️ 未知 |
-| ⚠️ `<table_from_xml_namespace>` | 推断：<根据 Mapper> | 推断：<从 SQL> | ⚠️ 未知 |
-
-> **为什么独立成段**：与 §2 「真实 DDL」隔离，强制读者意识到这是推断，不是事实。CI 校验脚本会扫 ⚠️ 标记，提示"是否补充 DDL"。
+**何时启用**：项目**没有** `*.sql` / `flyway/` / `liquibase/` / `db-scripts/` 等 DDL 来源。典型场景：老项目只有 XML + Model，无建表脚本。
 
 ## 3. 关键关联关系
 
