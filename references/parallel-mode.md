@@ -122,7 +122,7 @@ Phase 4 ─── 并行 11+13，然后 12
 {变体指令（§D 中 A/B/C/D 扫描流程）}
 【项目信息】PROJECT_ROOT=${PROJECT_ROOT} SRC_DIR=${SRC_DIR} WEB_SRC=${WEB_SRC} 技术栈={Step 1 继承}
 【Phase 1 共享事实】{项目规模 / 关键目录 / 已知警惕区域}
-【输出要求】写入 ${PROJECT_ROOT}/asset-docs/{NN}-{资产名}.md；frontmatter 必填 id/version/last_updated/data_source/code_version/owner/ai_consumable；自检过变体清单；返回文件路径+行数+grep 数 vs 表格行数对比
+【输出要求（硬性红线）】**只能**写入 ${PROJECT_ROOT}/asset-docs/{NN}-{资产名}.md —— 写其他任何路径一律作废；frontmatter 必填 id/version/last_updated/data_source/code_version/owner/ai_consumable；自检过变体清单；返回文件路径+行数+grep 数 vs 表格行数对比
 【降级约束】源文件 > 200 个时优先核心包（排除 test/ 和 deprecated/）；单文件 Read > 500 行时 grep 定位 + Read 上下文 ±50 行；严禁压缩到跳过实体
 ```
 

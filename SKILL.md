@@ -594,9 +594,17 @@ done
    - 优先用 `${SKILL_HOME}`（skill 安装时记录的绝对路径）
    - 退化：从当前工作目录向上找 5 层
 
-3. **资产输出位置**：
-   - 严格 `${PROJECT_ROOT}/asset-docs/`
-   - 不写 `${PROJECT_ROOT}/docs/`（避免与已有项目冲突）
+	3. **资产输出位置（硬性红线）**：
+	   - **必须**输出到 ${PROJECT_ROOT}/asset-docs/（目标项目的资产目录）
+	   - **禁止**输出到 ${SKILL_HOME}/ 下的任何目录（包括 _proc-use/、_test-output/ 等 gitignored 过程目录）
+	   - **禁止**输出到 /tmp/ 或任何临时目录
+	   - **原因**：本 skill 的核心产出是目标项目的正式补充资料，不是 skill 本身的过程产物。写入 gitignored 目录 = 产出从目标项目丢失。
+	   - **验证**：每个 Phase 完成后，orchestrator 必须跑 find ${PROJECT_ROOT}/asset-docs 确认资产数 ≥ 预期
+	   - **例外**：仅当目标项目不存在或无法写入时，降级到同级目录（并在 CHANGELOG 中标注）
+t   - **禁止**输出到 `/tmp/` 或任何临时目录
+t   - **原因**：本 skill 的核心产出是目标项目的正式补充资料，不是 skill 本身的过程产物。写入 gitignored 目录 = 产出从目标项目丢失。
+t   - **验证**：每个 Phase 完成后，orchestrator 必须跑 `find ${PROJECT_ROOT}/asset-docs -name "*.md" | wc -l` 确认资产数 ≥ 预期
+t   - **例外**：仅当目标项目不存在或无法写入时，降级到 `${PROJECT_ROOT}/../<project>-asset-docs/`（同级目录，并在 CHANGELOG 中标注）
 
 4. **CLAUDE.md 双文件策略**：
    - `CLAUDE.md` ≤ 80 行（轻量索引 + "按需加载"标注）
