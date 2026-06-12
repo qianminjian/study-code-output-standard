@@ -18,6 +18,8 @@ _proc-use/
 .phase-execution/
 # Bug 报告 / 改进建议（过程记录，未决议前不入版本控制）
 buginfo/
+# v3.5 端到端验证隔离工作目录（过程产物）
+.v3.5-test/
 # 环境变量
 .env
 
