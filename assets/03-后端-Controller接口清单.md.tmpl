@@ -27,9 +27,14 @@
 
 | Controller | 前缀 | Api tags | 端点数 | 公开端点数 | 鉴权策略 | 全局前缀 | Swagger 启用 |
 |---|---|---|:-:|:-:|---|---|---|
-| <Controller> | <prefix> | <tags> | <N> | <N> | @PreAuthorize / permitAll / @CrossOrigin | <无/api/v1> | <是/否> |
+| `<Controller>` | `<prefix>` | `<tags>` | `<N>` | `<N>` | @PreAuthorize / permitAll / @CrossOrigin | <无/api/v1> | <是/否> |
 
-> **check-consistency 对账命令**（自动跑）：
+> **⚠️ 格式要求（v2.6 新增）**：
+> - Controller 名称**必须用反引号**（`` `ControllerName` ``），**不是尖括号** `<ControllerName>`。
+> - 反引号格式是 check-consistency.sh v2.5+ 的匹配正则（`` `[A-Z][a-zA-Z]+` ``），
+>   用尖括号会导致 documented=0 → MISMATCH 误报。
+> - v3.0 worker 已验证：用纯文本 `| HandleController |` → Controller 数误判为 0。
+> - check-consistency 对账命令：
 > - 端点总数 = 表格"端点数"列之和 = `grep -rE "@(Get\|Post\|Put\|Delete)Mapping" <controller-dir> \| wc -l`（**必须相等**）
 > - Controller 总数 = 表格行数 = `find <controller-dir> -name "*Controller.java" \| wc -l`
 > - 公开端点总数 = 表格"公开端点数"列之和 ≈ `grep -rl "@CrossOrigin" <controller-dir> \| wc -l`（粗略，公开端点不一定都在 @CrossOrigin 注解上）
