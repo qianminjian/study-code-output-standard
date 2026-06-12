@@ -10,9 +10,9 @@
 | 1 | 可靠性加固 | 2 | 1 | in_progress |
 | 2 | 工具链升级 | 4 | 1 | in_progress |
 | 3 | 跨平台+文档 | 7 | 1 | in_progress |
-| 4 | 新场景覆盖 | 6 | 0 | pending |
+| 4 | 新场景覆盖 | 6 | 1 | in_progress |
 
-**Overall**: 3/19 plans completed (16%)
+**Overall**: 4/19 plans completed (21%)
 
 ## Phase 1: 可靠性加固
 
@@ -45,7 +45,7 @@
 
 | Plan | Name | Status | Summary |
 |:----:|------|:------:|---------|
-| 4.1 | 前端项目测试 | pending | — |
+| 4.1 | v35-pipeline.sh + quality-compare.sh + agent-watchdog.sh 烟雾测试 + 测试缺口文档 | complete | [SUMMARY](phases/04-new-scenario-coverage/04-1-SUMMARY.md) |
 | 4.2 | TypeScript/Node 项目测试 | pending | — |
 | 4.3 | Python 项目测试 | pending | — |
 | 4.4 | 单体项目测试 | pending | — |
