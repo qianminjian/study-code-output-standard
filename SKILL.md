@@ -656,10 +656,6 @@ JAVA_COUNT=$(find ${PROJECT_ROOT} -name "*.java" -not -path "*/test/*" | wc -l |
 	   - **原因**：本 skill 的核心产出是目标项目的正式补充资料，不是 skill 本身的过程产物。写入 gitignored 目录 = 产出从目标项目丢失。
 	   - **验证**：每个 Phase 完成后，orchestrator 必须跑 find ${PROJECT_ROOT}/asset-docs 确认资产数 ≥ 预期
 	   - **例外**：仅当目标项目不存在或无法写入时，降级到同级目录（并在 CHANGELOG 中标注）
-t   - **禁止**输出到 `/tmp/` 或任何临时目录
-t   - **原因**：本 skill 的核心产出是目标项目的正式补充资料，不是 skill 本身的过程产物。写入 gitignored 目录 = 产出从目标项目丢失。
-t   - **验证**：每个 Phase 完成后，orchestrator 必须跑 `find ${PROJECT_ROOT}/asset-docs -name "*.md" | wc -l` 确认资产数 ≥ 预期
-t   - **例外**：仅当目标项目不存在或无法写入时，降级到 `${PROJECT_ROOT}/../<project>-asset-docs/`（同级目录，并在 CHANGELOG 中标注）
 
 4. **CLAUDE.md 双文件策略**：
    - `CLAUDE.md` ≤ 80 行（轻量索引 + "按需加载"标注）
