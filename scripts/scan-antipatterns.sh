@@ -87,9 +87,10 @@ scan_label "@sqlinjection" "SQL 注入 🔴 P0" \
   "grep -rnE '\\\\\$\\{[^}]+\\}' '$XML_DIR'"
 [ -d "$XML_DIR" ] || echo "  (目录 $XML_DIR 不存在，跳过)"
 
-# @secret-leak: 真密钥/密码硬编码（v2.3 排除函数调用 + 阈值 16）
-# v2.5 扩展:同时扫 yml + properties 配置（之前只扫 Java，漏 yml 中明文密钥）
-# yml 文件可能在 SRC_DIR 之外（runner 模块的 resources），用 SRC_DIR 上溯到含 <modules> 的 parent pom.xml
+# @secret-leak: 真密钥/密码硬编码
+# v2.6 修复:阈值 16→8(06 worker 验证 CxMtyx@9527. 11 字符漏报)
+# 字符类扩展含 @/./!/#/$(密码常见字符)+ _/-/+先保留
+# yml 扫描上溯到含 <modules> 的 parent pom.xml(v2.5)
 PROJECT_ROOT="$SRC_DIR"
 while [ "$(dirname "$PROJECT_ROOT")" != "/" ]; do
   if [ -f "$PROJECT_ROOT/pom.xml" ] && grep -q "<modules>" "$PROJECT_ROOT/pom.xml" 2>/dev/null; then
@@ -98,8 +99,11 @@ while [ "$(dirname "$PROJECT_ROOT")" != "/" ]; do
   PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
 done
 scan_label "@secret-leak" "密钥/密码明文 🔴 P0" \
-  "(grep -rnE '(secret|password|passwd|apikey|api_key|access_key|private_key|jwt[._-]?secret)\\s*[:=]\\s*[\"\\'][A-Za-z0-9_./+=-]{16,}[\"\\']' '$SRC_DIR' 2>/dev/null | grep -viE 'getToken|getHeader|setAttribute|getParameter|request\\.|response\\.' | grep -vE '/test/' | grep -vE '/target/'; \
-   grep -rnE '(secret|password|passwd|apikey|api_key|access_key|private_key|jwt[._-]?secret)\\s*:\\s*[\"\\']?[A-Za-z0-9_./+=-]{8,}[\"\\']?' '$PROJECT_ROOT' 2>/dev/null --include='*.yml' --include='*.yaml' --include='*.properties' | grep -vE '/test/' | grep -vE '/target/' | head -10)"
+  "grep -rnE '(secret|password|passwd|apikey|api_key|access_key|private_key|jwt[._-]?secret)\\s*[:=]\\s*[\"\\x27][A-Za-z0-9_./+=\\-@.!#]{8,}[\"\\x27]' '${SRC_DIR}' 2>/dev/null | grep -viE 'getToken|getHeader|setAttribute|getParameter|request\\.|response\\.' | grep -vE '/test/' | grep -vE '/target/'"
+
+# v2.6 新增: yml/properties 独立扫描（因 eval 机制不支持复杂正则 + 子 shell 管道）
+scan_label "@secret-yml" "密钥/密码明文(yml) 🔴 P0" \
+  "for f in \$(find '${PROJECT_ROOT}' -name '*.yml' -o -name '*.yaml' -o -name '*.properties' 2>/dev/null | grep -vE '/test/|/target/'); do grep -nE '(secret|password|passwd|apikey|api_key|access_key|private_key).*[A-Za-z0-9_./+=\\-@.!#]{8,}' \"\$f\" 2>/dev/null | sed \"s|^|\$f:|\"; done | head -10"
 [ -d "$SRC_DIR" ] || echo "  (目录 $SRC_DIR 不存在，跳过)"
 
 # @cors-wildcard: CORS 通配
@@ -226,6 +230,31 @@ scan_label "@wrong-package" "包名/路径错 ⚪ P3" \
 scan_label "@missing-i18n" "多语言键 ⚪ P3" \
   "if [ -d '$WEB_SRC/assets/languages' ]; then zh=\$(find '$WEB_SRC/assets/languages' -name 'zh*' 2>/dev/null | wc -l | tr -d ' '); en=\$(find '$WEB_SRC/assets/languages' -name 'en*' 2>/dev/null | wc -l | tr -d ' '); echo \"  zh_cn 文件: \$zh, en_us 文件: \$en\"; if [ \"\$zh\" -ne \"\$en\" ]; then echo '  WARN: 中英文翻译文件数量不一致'; fi; else echo '  (i18n 目录不存在，跳过)'; fi"
 [ -d "$WEB_SRC/assets/languages" ] || echo "  (i18n 目录不存在，跳过)"
+
+# ==================== v2.6: yml/properties 密文明文独立扫描 ====================
+# 背景:06 worker 验证 eval 机制不支持 yml 正则中的 ${var:default} 模式
+# 此段直接调用 grep（不通过 scan_label/eval），避免引号转义链
+# 仅扫描 yml/yaml/properties——Java 侧 @secret-leak 标签不变
+echo ""
+echo "=== yml-secret-scan  密钥/密码明文(yml) 🔴 P0 ==="
+YML_RESULT=$(grep -rnE '(secret|password|passwd|apikey|api_key|access_key|private_key).*[A-Za-z0-9_./+=\-@.!#]{8,}' \
+  "${PROJECT_ROOT}" --include='*.yml' --include='*.yaml' --include='*.properties' 2>/dev/null \
+  | grep -vE '/test/' | head -10)
+
+# 找 yml 文件路径——无结果时尝试递归扫
+if [ -z "$YML_RESULT" ] && [ -d "${PROJECT_ROOT}" ]; then
+  YML_RESULT=$(find "${PROJECT_ROOT}" -name '*.yml' -o -name '*.yaml' 2>/dev/null | grep -vE '/test/' | while IFS= read -r f; do
+    grep -nE '(secret|password|passwd|apikey|api_key|access_key|private_key).*[A-Za-z0-9_./+=\-@.!#]{8,}' "$f" 2>/dev/null | sed "s|^|${f}:|"
+  done | head -10)
+fi
+
+if [ -n "$YML_RESULT" ]; then
+  echo "$YML_RESULT"
+  hit_labels=$((hit_labels+1))
+else
+  echo "  (clean)"
+fi
+total_labels=$((total_labels+1))
 
 # ==================== 覆盖率统计 ====================
 
