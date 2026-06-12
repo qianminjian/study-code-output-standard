@@ -616,6 +616,7 @@ t   - **例外**：仅当目标项目不存在或无法写入时，降级到 `${
    - 不省元信息头
    - 不省 frontmatter（6 必填 + 2 可选：`id` / `version` / `last_updated` / `data_source` / `owner` / `ai_consumable` 为必填；`code_version` / `severity_taxonomy` 为可选；详见 `02-目录与命名规范.md §3`）
    - 不省强制列
+	   - **不将资产写入 gitignored 目录**（`_proc-use/`、`_test-output/`、`.v3.*-test/` 等过程目录）—— 这是非法输出位置，违反 §3 硬性红线
 
 ## 附加资产（
 
