@@ -51,15 +51,35 @@ Phase 4 ─── 并行 11+13，然后 12
 **诚实标注**：铁律 1-3 可脚本/审计验证（硬铁律）；铁律 4-5 仅靠 worker 自觉 + 审计间接推断（软约束）。v3.0 串行同样面临 4-5 不可硬验证。
 
 **变体 A 扫描流程**（Extract）：
-1. 跑 grep/find 记录精确计数 → 2. 逐个 Read 全文不跳过 → 3. 按模板结构填表 → 4. 重 grep 计数校验
+1. 跑 grep/find 记录精确计数
+2. 逐个 Read 源文件——**遵守 Step 3 Read 策略**（每个 Read 上限 500 行；超 500 行用 grep 定位关键字段 + Read 上下文 ±50 行；**禁止整文件 Read**）
+3. 按模板结构填表
+4. 重 grep 计数校验（防止漏数 + 防止多填）
 
 **变体 B 扫描流程**（Analyze）：
-1. 跑 `scan-antipatterns.sh` → 2. 对命中 Read 源文件确认非误报 → 3. 手动 grep 补 TODO/FIXME/password/secret → 4. 06 必逐项对照 OWASP Top 10 → 5. 分类严重度 + 根因类型
+1. 跑 `scan-antipatterns.sh`（**注意：仅扫 Java 源码；yml 密钥需 06 worker 人工补查**）
+2. 对命中 Read 源文件确认非误报——**遵守 Step 3 Read 策略**
+3. 手动 grep 补 TODO/FIXME/password/secret/yml-config
+4. 06 必逐项扫描 yml/properties（**scan-antipatterns.sh 不覆盖**）
+5. 分类严重度 + 根因类型
 
-**变体 C 扫描流程**（Synthesize）：见 references/methodology/04 §3.1，**反偷懒门**：如实报告异常路径数，若 < 2 → 解释或标 `@incomplete-coverage`；未解之谜 ≥ 3 条；不强制但少于此数需说明。
+**变体 C 扫描流程**（Synthesize）：
+- 见 references/methodology/04 §3.1
+- **反偷懒门（硬约束）**：
+  - 调用链追踪 ≥ 3 层（Service → Mapper → 跨服务 Feign）
+  - 异常场景分析 ≥ 3 个（per 业务流）
+  - 决策点 ≥ 2 个（per 业务流）
+  - 隐含假设 ≥ 2 个（per 业务流）
+  - **未解之谜 ≥ 3 条（硬约束）**——少于此数必须显式说明为什么这个项目不适用
+- 违反硬约束 = 输出作废
 
 **变体 D 扫描流程**（Aggregate）：
-1. 通读全部上游资产（不是摘要）→ 2. 提取关键数据点 → 3. 交叉一致性检查（entity 名 / 端点交集）→ 4. 综合非复制粘贴
+1. 通读全部上游资产（**不是摘要**）
+2. 提取关键数据点
+3. 交叉一致性检查（entity 名 / 端点交集 / 集成债）
+4. 综合**非复制粘贴**——必须产生 11 资产未提及的**集成债**
+
+> **关键发现（v3.5 端到端验证）**：11 资产的"集成债"是 v3.5 跨资产对比的**核心价值**——单看任何上游资产都漏。变体 D 必须做跨资产对比，不能停留在单资产聚合。
 
 ---
 
