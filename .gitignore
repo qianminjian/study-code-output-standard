@@ -16,6 +16,10 @@ asset-docs/
 _proc-use/
 # atdo 运行时状态/报告目录
 .phase-execution/
+# Claude Code 本地配置（CronCreate / hooks / 会话缓存）
+.claude/
+# GSD / atdo 运行时计划目录
+.planning/
 # Bug 报告 / 改进建议（过程记录，未决议前不入版本控制）
 buginfo/
 # v3.5 端到端验证隔离工作目录（过程产物）
