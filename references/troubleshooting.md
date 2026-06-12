@@ -184,6 +184,58 @@
 
 ---
 
+## 11. Windows / PowerShell 已知局限
+
+> 本章记录 4 个 `.ps1` 脚本在 Windows 环境下的已知局限和替代方案。
+> 脚本路径：`scripts/init-asset-docs.ps1`、`scripts/write-claude-asset.ps1`、`scripts/write-claude-index.ps1`、`scripts/validate-all.ps1`
+> 配套 `.sh` 版本：macOS / Linux / Git Bash 均已通过端到端验证
+
+### 状态总览
+
+| 脚本 | 大小 | 语法验证 | Linux/macOS 测试 | Windows 测试 |
+|------|:----:|:--------:|:----------------:|:------------:|
+| `init-asset-docs.ps1` | 181 行 | PASS | N/A（.ps1 不适用） | **未测试** |
+| `write-claude-asset.ps1` | 213 行 | PASS | N/A | **未测试** |
+| `write-claude-index.ps1` | 114 行 | PASS | N/A | **未测试** |
+| `validate-all.ps1` | 67 行 | PASS | N/A | **未测试** |
+
+> **验证方法**：`grep -c '{'` vs `grep -c '}'` (brace match), `head -1` (comment header), `grep 'param('` (param block), `grep 'ErrorActionPreference'` (error handling)
+
+### 已知局限
+
+1. **未在 Windows 上执行过端到端测试**
+   - 4 个 `.ps1` 文件仅在语法层面验证（括号匹配 / 参数块 / 错误处理），未在 Windows PowerShell 5.1+ 或 PowerShell 7+ 上实际执行
+   - 路径分隔符差异（`\` vs `/`）在 `Set-Content` / `Copy-Item` 调用中可能产生不一致行为
+
+2. **依赖 Git Bash 的间接调用**
+   - `validate-all.ps1` 通过 `& bash` 调用 4 个 `.sh` 校验脚本，需要在 Windows 上额外安装 Git for Windows
+   - `init-asset-docs.ps1` 无此依赖（纯 PowerShell），可直接在 PowerShell 中执行
+
+3. **交互行为差异**
+   - `Read-Host` 在非交互 PowerShell 会话中的行为与 Git Bash / zsh 不同（`.ps1` 脚本有非交互模式 fallback，`.sh` 脚本通过 `-f` flag 控制）
+
+### 替代方案（推荐）
+
+| 场景 | 推荐方案 |
+|------|---------|
+| Windows 用户需要脚本 | 使用 `.sh` 版本通过 WSL / Git Bash 运行 |
+| 纯 PowerShell 环境 | 使用 `.ps1` 脚本并配合 Git Bash |
+| CI Windows runner | 使用 `ubuntu-latest` runner 执行 `.sh` 脚本（已验证通过） |
+| 本地 macOS/Linux | 直接使用 `.sh` 脚本（已验证 10 模块） |
+
+### 待验证清单（Windows 环境）
+
+- [ ] PowerShell 5.1 下 `init-asset-docs.ps1 -TargetDir . -Force` 端到端
+- [ ] PowerShell 7+ 下 `init-asset-docs.ps1 -TargetDir . -Force` 端到端
+- [ ] `write-claude-index.ps1` 产出的 `CLAUDE.md` 格式完整性
+- [ ] `write-claude-asset.ps1` 产出的 `CLAUDE-ASSET.md` 格式完整性
+- [ ] `validate-all.ps1` 在 Windows runner 上的 CI job 绿灯
+- [ ] 路径包含中文 / 空格时的 `Join-Path` 行为
+
+> 上述验证需要 Windows 环境，待未来 Phase 4（新场景覆盖）中安排。
+
+---
+
 > **文档版本**：v1.0.0
 > **最后更新**：2026-06-12
 > **覆盖率**：10 个错误模式（check-consistency / agent stall / .phase-facts / 输出路径 / 03 格式 / yml 漏报 / worker 超载 / 分层抽样 / turn 恢复 / 严重度不一致）

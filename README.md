@@ -59,7 +59,7 @@ docs/
 
 | Limitation | Impact | Mitigation |
 |---|---|---|
-| `.ps1` untested on Windows | Windows users cannot use scripts directly | Use `.sh` scripts via WSL/Git Bash; PS1 verification pending |
+| `.ps1` scripts syntax-validated but untested on Windows | 4 PowerShell scripts (181-213 lines each) pass brace-matching/param/error-handling checks but lack Windows CI verification | Use `.sh` scripts via WSL/Git Bash; Windows CI gate pending (see `references/troubleshooting.md §11`) |
 | 1-project verification (v3.5) | Statistical confidence low | Documented in CHANGELOG; more projects welcome |
 | `${VAR}` refs in yml scan trigger false positives | Extra human review lines | Head-limited to 15 lines; review scope bounded |
 
