@@ -15,7 +15,7 @@ jobs:
     uses: ./.github/workflows/_test.yml
     with:
       working-directory: '.'
-      test-command: 'bash tests/run-all.sh'
+      test-command: 'bash _proc-use/tests/run-all.sh'
 
   lint:
     name: lint

@@ -10,7 +10,7 @@ on:
       test-command:
         description: '测试入口命令'
         type: string
-        default: 'bash tests/run-all.sh'
+        default: 'bash _proc-use/tests/run-all.sh'
 
 jobs:
   test:

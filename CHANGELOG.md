@@ -8,7 +8,7 @@
   - §C 4 阶段管线 / §D 4 Worker 变体 / §E Prompt 组装逻辑
 - **共享事实字典协议** (SKILL.md §F)：编排者 Phase 间同步 schema (4 段 / 硬性协议)
 - **scripts/yml-secret-scan.sh**：yml/properties 密文明文独立扫描 (v2.6)
-- **docs/design/v3.5-parallel-architecture.md**：方案源迁移到 docs/（47KB / 12 章）
+- **_proc-use/docs/design/v3.5-parallel-architecture.md（过程产物）**：方案源迁移到 docs/（47KB / 12 章）
 - **test suite 重组**：init-validate / secrets / no-leak-path / run-all
 
 ### 修复
