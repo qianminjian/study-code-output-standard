@@ -225,6 +225,18 @@ JAVA_COUNT=$(find ${PROJECT_ROOT} -name "*.java" -not -path "*/test/*" | wc -l |
 - 套用适用矩阵，决定 12 篇哪些输出 / 哪些占位 / 哪些省略
 - 不适用也保留编号（如纯后端项目 07/08/09 写"本项目无前端"）
 
+**前端/多端自动检测（v2.6 新增 — 避免 agent 浪费时间读 N/A 模板）**：
+```bash
+# 检测是否有前端代码
+HAS_FRONTEND=$(find ${PROJECT_ROOT} -name '*.vue' -o -name '*.jsx' -o -name '*.tsx' -o -name '*.html' 2>/dev/null | grep -v node_modules | wc -l | tr -d ' ')
+if [ "$HAS_FRONTEND" -eq 0 ]; then
+  echo "纯后端项目 — 07/08/09 自动占位（不读模板）"
+  SKIP_FRONTEND=true
+fi
+```
+- `SKIP_FRONTEND=true` → 07/08/09 生成 2 行 N/A 占位即可，**不浪费 agent Read 时间读这 3 个模板**
+- 24 模块实测：全部纯后端，07/08/09 每次都浪费 agent 读取 + 写入。此检测省 ~5% agent 时间
+
 **输出**：12 篇覆盖决策表
 
 ### Step 3 · 抽取（Extraction）— AI 主战场
