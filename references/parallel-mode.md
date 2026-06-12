@@ -152,7 +152,10 @@ fi
 【5 铁律】{共享 Preamble §D}
 【模板】Read: ${SKILL_HOME}/assets/{NN}-{模板}.md.tmpl
 【prompt 参考】可选 Read: ${SKILL_HOME}/references/prompts/{NN}-{prompt}.md
-【共享事实字典】**必读** ${PROJECT_ROOT}/asset-docs/.phase-facts.md（违反 = 跨资产一致性无保证 = 输出作废）
+【共享事实字典】**必读** ${PROJECT_ROOT}/asset-docs/.phase-facts.md
+  → 如果文件不存在或为空 → **立即终止**
+  → 返回 "FATAL: .phase-facts.md missing or empty — Phase completion protocol violated"
+  → 编排者收到后必须补写 .phase-facts.md 再重试（不静默跳过）
 {变体指令（§D 中 A/B/C/D 扫描流程）}
 【项目信息】PROJECT_ROOT=${PROJECT_ROOT} SRC_DIR=${SRC_DIR} WEB_SRC=${WEB_SRC} 技术栈={Step 1 继承}
 【Phase 1 共享事实】{项目规模 / 关键目录 / 已知警惕区域}
