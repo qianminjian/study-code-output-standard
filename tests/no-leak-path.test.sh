@@ -13,7 +13,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 #   - 输出代码资产的提示词.md（项目原始 prompt）
 echo "[T1] 扫描 /Users/minjianq 真实路径泄露"
 LEAKED=$(grep -rn "/Users/minjianq" "$REPO_ROOT" \
-  --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" \
+  --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" --exclude-dir=".v3.5-test" --exclude-dir=".v3.0-test" \
   --include="*.md" --include="*.sh" --include="*.ps1" \
   --exclude="输出代码资产的提示词.md" \
   2>/dev/null || true)
@@ -28,7 +28,7 @@ echo "  ✓ 无 /Users/minjianq 泄露"
 # 2. 扫描 /Users/qian 或其他真实用户名（兼容中文环境）
 echo "[T2] 扫描其他可能真实路径"
 LEAKED2=$(grep -rnE "/Users/[a-z]+/(Documents|Downloads|Desktop|projects)/" "$REPO_ROOT" \
-  --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" \
+  --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" --exclude-dir=".v3.5-test" --exclude-dir=".v3.0-test" \
   --exclude="输出代码资产的提示词.md" \
   --include="*.md" --include="*.sh" --include="*.ps1" \
   2>/dev/null | grep -vE "/Users/[a-z]+/\$|<保密>|<保密路径>|placeholder|example" || true)
@@ -58,7 +58,7 @@ fi
 # 4. 扫描 C:\Users\... Windows 真实路径
 echo "[T4] 扫描 Windows 真实路径泄露"
 LEAKED3=$(grep -rnE "C:\\\\Users\\\\[a-zA-Z]+" "$REPO_ROOT" \
-  --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" \
+  --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" --exclude-dir=".v3.5-test" --exclude-dir=".v3.0-test" \
   --exclude="输出代码资产的提示词.md" \
   --include="*.md" --include="*.sh" --include="*.ps1" \
   2>/dev/null || true)

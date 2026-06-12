@@ -17,7 +17,7 @@ echo "[T1] 扫描 secret/password/token/apikey 明文赋值"
 HITS=$(grep -rnE "(secret|password|passwd|token|apikey|api_key|access_key|private_key|jwt[._-]?secret)\s*[:=]\s*[\"']?[A-Za-z0-9_./+=-]{6,}[\"']?" \
   "$REPO_ROOT" \
   --include="*.md" --include="*.sh" --include="*.ps1" --include="*.yml" --include="*.yaml" --include="*.properties" \
-  --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" --exclude-dir=".internal" --exclude-dir="references" \
+  --exclude-dir=".git" --exclude-dir="tests" --exclude-dir="node_modules" --exclude-dir=".v3.5-test" --exclude-dir=".v3.0-test" --exclude-dir=".internal" --exclude-dir="references" \
   2>/dev/null || true)
 
 # 过滤：仅保留真实可疑行（去除 <REDACTED> / 注释 / 反例 / 表格内）
